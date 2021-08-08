@@ -1,8 +1,18 @@
+const Catbox = require('./node_modules/catbox.moe');
+const axios = require('./node_modules/axios');
+const SocksProxyAgent = require('./node_modules/socks-proxy-agent');
+const colors = require('./node_modules/colors');
+const feetch = require('./node_modules/node-fetch');
 const fs = require('fs')
 const repl = require('repl')
 const LS = require('./LambdaScript')
 const {Bot, listen} = require('./bot')
 
+global.Catbox = Catbox
+global.axios = axios
+global.SocksProxyAgent = SocksProxyAgent
+global.colors = colors
+global.feetch = feetch
 global.Bot = Bot
 global.listen = listen
 global.machines = [];
