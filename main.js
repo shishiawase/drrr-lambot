@@ -8,6 +8,7 @@ const repl = require('repl')
 const LS = require('./LambdaScript')
 const {Bot, listen} = require('./bot')
 
+global.fs = fs
 global.Catbox = Catbox
 global.axios = axios
 global.SocksProxyAgent = SocksProxyAgent
