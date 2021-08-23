@@ -36,6 +36,7 @@ zPic = {
 		"Рыбы:": "https://files.catbox.moe/o2ndv0.jpg"
 	}
 }
+lucky = {};
 
 rand = (min,max) => {
   Math.floor(Math.random()*(max-min+1))+min
@@ -58,10 +59,7 @@ upZod = () => {
 	}
 }
 
-lucky = {};
-SM = ["Садист", "Мазохист"];
-
-if !lucky.length then {
+if lucky.length < 1 then {
 	upZod();
 }
 
@@ -78,13 +76,6 @@ timer 60000*60 {
 timer 60000*15 {
 	a.dm(a.profile.name, ".");
 } 
-
-a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv");
-a.login(() => {
-	a.create("Гороскоп", "night | Когда-нибудь здесь будет таро... | !zod знак", "12", "ru-RU", true, false, false, () => {
-		console.log(a.room.roomId);
-	})
-})
 
 chunkString = (size, str) => {
     pos = 0; chunks = []
@@ -110,7 +101,7 @@ chunkString = (size, str) => {
     })
     if(buffer.length) then msgs.push(buffer)
 		
-	  a.print("Оценка:\n\n" + "Бизнес: " + lucky[type][0] + "\nЛюбовь: " + lucky[type][1] + "\nЧисло дня: " + lucky[type][2]);
+	  a.print("Оценка:\n" + "⤷Бизнес: " + lucky[type][0] + "\n⤷Любовь: " + lucky[type][1] + "\n⤷Число дня: " + lucky[type][2]);
 	  msgs.reverse();
     msgs.forEach(m => a.print(m));
 		a.print(Object.keys(zPic[type])[0], Object.values(zPic[type])[0]);
@@ -144,6 +135,14 @@ event msg (u, m: "!zod") => {
 	  zodiac("aquarius", x => batch_print(x, "aquarius"));
 }
 
-event [msg, me] (u: !a.profile.name, m) => {
+event [msg, me] (u, m) => {
+	if u !== a.profile.name then
 	console.log(u + ": " + m);
 }
+
+a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
+a.login(() => {
+	a.create("Гороскоп", "night | Когда-нибудь здесь будет таро... | !zod знак", "12", "ru-RU", true, false, false, () => {
+		console.log(a.room.roomId);
+	})
+})
