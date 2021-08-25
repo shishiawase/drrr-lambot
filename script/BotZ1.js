@@ -123,8 +123,8 @@ chunkString = (size, str) => {
 		}
   }
 
-event msg (u, m: "^!h") => {
-	batch_print("!zod 'знак' - гороскоп по зодиаку./n!y 'исполнитель - название' - поставить музыку с ютуба(ждите пока конвертируется).\n!list - 5 найденных песен по результатам последнего поиска.", "music");
+event [msg, dm] (u, m: "^!h") => {
+	batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!y 'исполнитель - название' - музыкa с ютуба(ждите пока конвертируется).\n⤷!list - 5 найденных песен по результатам последнего поиска.", "music");
 }
 
 event [msg, me] (u, m: "!y") => {
@@ -137,7 +137,8 @@ event [msg, me] (u, m: "!y") => {
 				else a.music(ytList[1][0], link.file);
 			});
 		});
-  else ytSearch(m.substring(3), x => {
+  else if m.match("^!y") then 
+	  ytSearch(m.substring(3), x => {
 			ytList = x;
 			ytUrl(ytList[1][2], link => {
 				if link.error == true then {
@@ -150,7 +151,7 @@ event [msg, me] (u, m: "!y") => {
 		});
 }
 
-event [msg, me] (u, m: "!list") => {
+event [msg, me] (u, m: "^!list") => {
 	 num = m.substring(6);
 	if m.match("^!list$") then
 	  batch_print("Пять песен по результатам последнего поиска:\n⤷1: " + ytList[1][0] + " - " + ytList[1][1] + "\n⤷2: " + ytList[2][0] + " - " + ytList[2][1] + "\n⤷3: " + ytList[3][0] + " - " + ytList[3][1] + "\n⤷4: " + ytList[4][0] + " - " + ytList[4][1] + "\n⤷5: " + ytList[5][0] + " - " + ytList[5][1] + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
@@ -165,7 +166,7 @@ event [msg, me] (u, m: "!list") => {
 	}
 }
 	
-event msg (u, m: "!zod") => {
+event msg (u, m: "^!zod") => {
 	
 	if m.match("[Рр]ыбы") then
 	  zodiac("pisces", x => batch_print(x, "pisces"));
