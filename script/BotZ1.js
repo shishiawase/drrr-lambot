@@ -115,9 +115,13 @@ tarFunc = (name) => {
         later 33000 a.print("Третья карта, карта подсознательного...");
         later 36000 {
           a.print("/meПереворачивает третью карту...");
-          later 6000 batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
-          zodSwitch = true;
-          taroSwitch = true;
+          later 6000 {
+						batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
+            later 12000 {
+							zodSwitch = true;
+              taroSwitch = true;
+						}
+					}
         }
       }
     }
@@ -132,9 +136,9 @@ ytList = {};
 
 ytUrl = (id, call) => {
   url = "http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id;
-  got(url)
+  axios(url)
   .then(resp => {
-    nod = JSON.parse(resp.body);
+    nod = resp.data;
     call(nod);
   })
 }
@@ -429,9 +433,9 @@ event[msg, me](u, m) => {
 
 //-------------------EVENTS-------------------↑
 
-a = new Bot(__this__, "Астроло", "gg", "ru-RU", "Tv")
+a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
   a.login(() => {
-    a.join("gXTQ8sgjrf", () => {
+    a.join("2jNEBMDj3E", () => {
       console.log(a.room.roomId);
       console.log("join room");
     })
