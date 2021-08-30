@@ -1,3 +1,6 @@
+catcherZ = "djkfdj4k121";
+catcherT = "54dsaj35ja";
+
 //-------------------ZODIAC-------------------↓
 
 zodSwitch = true;
@@ -117,9 +120,8 @@ tarFunc = (name) => {
           a.print("/meПереворачивает третью карту...");
           later 6000 {
 						batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
-            later 12000 {
-							zodSwitch = true;
-              taroSwitch = true;
+            later 5000 {
+							catcherT = Cards[Taro["Подсознательное"][0]][1];
 						}
 					}
         }
@@ -287,6 +289,22 @@ event[msg, me](u, m: "!y") => {
   }
 }
 
+event msg (u: a.profile.name, m: catcherZ) => {
+	later 5000 {
+		zodSwitch = true;
+    taroSwitch = true;
+		catcherZ = "djkfdj4k121";
+	}
+}
+
+event msg (u: a.profile.name, m: catcherT) => {
+	later 5000 {
+		zodSwitch = true;
+    taroSwitch = true;
+		catcherT = "54dsaj35ja";
+	}
+} 
+
 event[msg, me](u, m: "^!list") => {
   num = m.substring(6);
   if m.match("^!list$")then
@@ -312,87 +330,51 @@ event msg(u, m: "^!zod") => {
 
     if m.match("[Рр]ыбы")then
     zodiac("pisces", x => batch_print(x, "pisces", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Рыбы:";
       }));
     else if m.match("[Оо]вен")then
     zodiac("aries", x => batch_print(x, "aries", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Овен:";
       }));
     else if m.match("[Тт]елец")then
     zodiac("taurus", x => batch_print(x, "taurus", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Телец:";
       }));
     else if m.match("[Бб]лизнецы")then
     zodiac("gemini", x => batch_print(x, "gemini", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Близнецы:";
       }));
     else if m.match("[Рр]ак")then
     zodiac("cancer", x => batch_print(x, "cancer", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Рак:";
       }));
     else if m.match("[Лл]ев")then
     zodiac("leo", x => batch_print(x, "leo", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Лев:";
       }));
     else if m.match("[Дд]ева")then
     zodiac("virgo", x => batch_print(x, "virgo", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Дева:";
       }));
     else if m.match("[Вв]есы")then
     zodiac("libra", x => batch_print(x, "libra", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Весы:";
       }));
     else if m.match("[Сс]корпион")then
     zodiac("scorpio", x => batch_print(x, "scorpio", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Скорпион:";
       }));
     else if m.match("[Сс]трелец")then
     zodiac("sagittarius", x => batch_print(x, "sagittarius", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Стрелец:";
       }));
     else if m.match("[Кк]озерог")then
     zodiac("capricorn", x => batch_print(x, "capricorn", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Козерог:";
       }));
     else if m.match("[Вв]одолей")then
     zodiac("aquarius", x => batch_print(x, "aquarius", () => {
-        later 12000 {
-          zodSwitch = true;
-          taroSwitch = true;
-        }
+        catcherZ = "Водолей:";
       }));
   }
 }
