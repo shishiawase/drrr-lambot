@@ -120,9 +120,7 @@ tarFunc = (name) => {
           a.print("/meПереворачивает третью карту...");
           later 6000 {
 						batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
-            later 5000 {
-							catcherT = Cards[Taro["Подсознательное"][0]][1];
-						}
+            later 5000 catcherT = Cards[Taro["Подсознательное"][0]][1];
 					}
         }
       }
@@ -289,21 +287,23 @@ event[msg, me](u, m: "!y") => {
   }
 }
 
-event msg (u: a.profile.name, m: catcherZ) => {
-	later 5000 {
+event msg (u: "Астролог", m) => {
+	if m.match(catcherZ) then
+	later 3000 {
 		zodSwitch = true;
     taroSwitch = true;
 		catcherZ = "djkfdj4k121";
 	}
 }
 
-event msg (u: a.profile.name, m: catcherT) => {
-	later 5000 {
+event msg (u: "Астролог", m) => {
+	if m.match(catcherT) then
+	later 3000 {
 		zodSwitch = true;
     taroSwitch = true;
 		catcherT = "54dsaj35ja";
 	}
-} 
+}
 
 event[msg, me](u, m: "^!list") => {
   num = m.substring(6);
