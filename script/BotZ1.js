@@ -431,7 +431,7 @@ event[msg, me](u, m) => {
 
 a = new Bot(__this__, "Астроло", "gg", "ru-RU", "Tv")
   a.login(() => {
-    a.join("MGJFtqJev0", () => {
+    a.join("gXTQ8sgjrf", () => {
       console.log(a.room.roomId);
       console.log("join room");
     })
