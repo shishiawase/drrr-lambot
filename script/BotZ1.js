@@ -426,6 +426,10 @@ event msg(u, m: "^!taro") => {
   }
 }
 
+event dm (u: "shlyapa", m: "^!отдай$") => {
+  a.handOver(u);
+}
+
 event[msg, me](u, m) => {
   if u !== a.profile.name then
   console.log(u + ": " + m);
