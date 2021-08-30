@@ -39,7 +39,7 @@ globalThis.ytSearch = (na, call) => {
 	        if (Object.keys(x.items[num]).includes("length")) {
 						return x.items[num].length.simpleText;
 					} else {
-						return 'конченный конвертер зажал время';
+						return 'РєРѕРЅС‡РµРЅРЅС‹Р№ РєРѕРЅРІРµСЂС‚РµСЂ Р·Р°Р¶Р°Р» РІСЂРµРјСЏ';
 					}
         }
 				
