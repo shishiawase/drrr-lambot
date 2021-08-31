@@ -388,17 +388,23 @@ event msg(u, m: "^!taro") => {
       user = a.users.find(
           user => user.name === u)
 
-        if user.tripcode then {
-        if names.includes(user.tripcode)then
-        a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
+      if user.tripcode then {
+        if names.includes(user.tripcode)then {
+          a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
+					zodSwitch = true;
+          taroSwitch = true;
+				}
         else {
           names.push(user.tripcode);
           taro(x => Taro = x);
           tarFunc(u);
         }
       }
-      else if names.includes(u)then
-      a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
+      else if names.includes(u)then {
+        a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
+			  zodSwitch = true;
+        taroSwitch = true;
+			}
       else {
         names.push(u);
         taro(x => Taro = x);
