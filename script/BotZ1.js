@@ -1,3 +1,4 @@
+
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 
@@ -119,9 +120,9 @@ tarFunc = (name) => {
         later 36000 {
           a.print("/meПереворачивает третью карту...");
           later 6000 {
-						batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
+            batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
             later 5000 catcherT = Cards[Taro["Подсознательное"][0]][1];
-					}
+          }
         }
       }
     }
@@ -287,22 +288,22 @@ event[msg, me](u, m: "!y") => {
   }
 }
 
-event msg (u: "Астролог", m) => {
-	if m.match(catcherZ) then
-	later 3000 {
-		zodSwitch = true;
+event msg(u: "Астролог", m) => {
+  if m.match(catcherZ)then
+  later 3000 {
+    zodSwitch = true;
     taroSwitch = true;
-		catcherZ = "djkfdj4k121";
-	}
+    catcherZ = "djkfdj4k121";
+  }
 }
 
-event msg (u: "Астролог", m) => {
-	if m.match(catcherT) then
-	later 3000 {
-		zodSwitch = true;
+event msg(u: "Астролог", m) => {
+  if m.match(catcherT)then
+  later 3000 {
+    zodSwitch = true;
     taroSwitch = true;
-		catcherT = "54dsaj35ja";
-	}
+    catcherT = "54dsaj35ja";
+  }
 }
 
 event[msg, me](u, m: "^!list") => {
@@ -388,12 +389,12 @@ event msg(u, m: "^!taro") => {
       user = a.users.find(
           user => user.name === u)
 
-      if user.tripcode then {
+        if user.tripcode then {
         if names.includes(user.tripcode)then {
           a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
-					zodSwitch = true;
+          zodSwitch = true;
           taroSwitch = true;
-				}
+        }
         else {
           names.push(user.tripcode);
           taro(x => Taro = x);
@@ -402,9 +403,9 @@ event msg(u, m: "^!taro") => {
       }
       else if names.includes(u)then {
         a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
-			  zodSwitch = true;
+        zodSwitch = true;
         taroSwitch = true;
-			}
+      }
       else {
         names.push(u);
         taro(x => Taro = x);
@@ -414,7 +415,7 @@ event msg(u, m: "^!taro") => {
   }
 }
 
-event dm (u: "shlyapa", m: "^!отдай$") => {
+event dm(u: "shlyapa", m: "^!отдай$") => {
   a.handOver(u);
 }
 
@@ -426,9 +427,15 @@ event[msg, me](u, m) => {
 //-------------------EVENTS-------------------↑
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
-  a.login(() => {
-    a.join("2jNEBMDj3E", () => {
-      console.log(a.room.roomId);
-      console.log("join room");
-    })
-  })
+
+  roomchik = "2jNEBMDj3E";
+
+if load() then 
+	cobsole.log("bot loaded");
+else a.login(() => {
+	a.save();
+	a.join(roomchik, () => {
+		console.log("bot joined");
+	})
+})
+  
