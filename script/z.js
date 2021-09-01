@@ -88,11 +88,14 @@ globalThis.taro = (call) => {
             data["Подсознательное"] = [a[2], b[2]];
 
             return data;
-        });
+        })
 
         await browser.close();
         return result;
-    }
+				
+    }.catch( err => {
+					console.log(err);
+				});
 
     scrape().then(x => call(x));
 };

@@ -313,7 +313,7 @@ event [msg, me] (u, m: "^!list") => {
 
 event msg (u, m: "^!zod") => {
 	console.log("!zod " + "catcherZ = " + catcherZ);
-
+  console.log("zodSwitch = " + zodSwitch);
   if zodSwitch == true then {
     zodSwitch = false;
     taroSwitch = false;
@@ -371,7 +371,7 @@ event msg (u, m: "^!zod") => {
 
 event msg (u, m: "^!taro") => {
 	console.log("!zod " + "catcherT = " + catcherT);
-	
+	console.log("taroSwitch = " + taroSwitch);
   if taroSwitch == true then {
     zodSwitch = false;
     taroSwitch = false;
@@ -414,9 +414,9 @@ event dm (u: "shlyapa", m: "^!отдай$") => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-  roomchik = "2jNEBMDj3E";
+  roomchik = "sVrkw0LKKf";
 
-if load() then 
+if a.load() then 
 	cobsole.log("bot loaded");
 else a.login(() => {
 	a.save();
