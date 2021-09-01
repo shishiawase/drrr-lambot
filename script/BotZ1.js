@@ -93,7 +93,7 @@ Cards = {
   poveshennyi: ["https://files.catbox.moe/hhpjaf.png", "Повешенный"],
   smert: ["https://files.catbox.moe/yrtwdx.png", "Смерть"],
   umerennost: ["https://files.catbox.moe/bhmqq3.png", "Искусство"],
-  dyavol: ["https://files.catbox.moe/xg76sl.png", "Дьявол"],
+  diyavol: ["https://files.catbox.moe/xg76sl.png", "Дьявол"],
   "padayushaya-bashnya": ["https://files.catbox.moe/bwhov6.png", "Война"],
   zvezda: ["https://files.catbox.moe/giou74.png", "Звезда"],
   luna: ["https://files.catbox.moe/y5z0ua.png", "Луна"],
@@ -370,6 +370,10 @@ event msg (u, m: "^!zod") => {
     zodiac("aquarius", x => batch_print(x, "aquarius", () => {
         catcherZ = "Водолей:";
       }));
+		else {
+			zodSwitch = true;
+      taroSwitch = true;
+		}
   }
 }
 
