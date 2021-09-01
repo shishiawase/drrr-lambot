@@ -58,6 +58,7 @@ globalThis.ytSearch = (na, call) => {
 
 globalThis.taro = (call) => {
     let scrape = async() => {
+			try {
         const browser = await puppeteer.launch({
             headless: true
         });
@@ -89,13 +90,14 @@ globalThis.taro = (call) => {
 
             return data;
         })
+			} catch (err) {
+				console.log(err);
+			}
 
         await browser.close();
         return result;
 				
-    }.catch( err => {
-					console.log(err);
-				});
+    }
 
     scrape().then(x => call(x));
 };
