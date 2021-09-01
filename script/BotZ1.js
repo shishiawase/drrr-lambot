@@ -421,11 +421,13 @@ if a.load() then {
   BotStart();
 	cobsole.log("bot loaded");
 }
-else a.login(() => {
-	a.save();
-	a.join(roomchik, () => {
-		BotStart();
-		console.log("bot joined");
-	})
-})
+else { 
+  a.login(() => {
+	  a.save();
+	  a.join(roomchik, () => {
+		  BotStart();
+		  console.log("bot joined");
+	  });
+  });
+}
   
