@@ -1,4 +1,4 @@
-
+BotStart = () => {
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 
@@ -410,6 +410,7 @@ event dm (u: "shlyapa", m: "^!отдай$") => {
   a.handOver(u);
 }
 
+}
 //-------------------EVENTS-------------------↑
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
@@ -417,10 +418,12 @@ a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
   roomchik = "sVrkw0LKKf";
 
 if a.load() then 
+  BotStart();
 	cobsole.log("bot loaded");
 else a.login(() => {
 	a.save();
 	a.join(roomchik, () => {
+		BotStart();
 		console.log("bot joined");
 	})
 })
