@@ -417,9 +417,10 @@ a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
   roomchik = "sVrkw0LKKf";
 
-if a.load() then 
+if a.load() then {
   BotStart();
 	cobsole.log("bot loaded");
+}
 else a.login(() => {
 	a.save();
 	a.join(roomchik, () => {
