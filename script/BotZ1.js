@@ -111,18 +111,15 @@ tarFunc = (name) => {
     later 17000 a.print("Первая карта, карта мыслей...");
     later 20000 a.print("/meПереворачивает первую карту...");
     later 26000 {
-			console.log(Taro);
       batch_print(Taro["Мысли"][1], Taro["Мысли"][0]);
       later 27000 a.print("Вторая карта, карта эмоций...");
       later 30000 {
         a.print("/meПереворачивает вторую карту...");
-				console.log(Taro);
         later 6000 batch_print(Taro["Эмоции"][1], Taro["Эмоции"][0]);
         later 33000 a.print("Третья карта, карта подсознательного...");
         later 36000 {
           a.print("/meПереворачивает третью карту...");
           later 6000 {
-						console.log(Taro);
             batch_print(Taro["Подсознательное"][1], Taro["Подсознательное"][0]);
             later 5000 catcherT = Cards[Taro["Подсознательное"][0]][1];
           }
