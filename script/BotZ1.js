@@ -203,12 +203,11 @@ batch_print = (msg, type, call) => {
   if (buffer.length)
     then msgs.push(buffer);
 
-  if !type.match(re)
-    then {
-      msgs.reverse();
-      msgs.forEach(m => a.print(m));
-      a.print(Cards[type][1] + ":", Cards[type][0]);
-    }
+  if !type.match(re) then {
+    msgs.reverse();
+    msgs.forEach(m => a.print(m));
+    a.print(Cards[type][1] + ":", Cards[type][0]);
+  }
   else if type !== "music" then {
     a.print("Оценка:\n" + "⤷Бизнес: " + lucky[type][0] + "\n⤷Любовь: " + lucky[type][1] + "\n⤷Число дня: " + lucky[type][2]);
     msgs.reverse();
@@ -226,161 +225,153 @@ batch_print = (msg, type, call) => {
 
 //-------------------EVENTS-------------------↓
 
-event[msg, dm](u, m: "^!h") => {
+event [msg, dm] (u, m: "^!h") => {
   batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!y 'исполнитель - название' - музыкa с ютуба(ждите пока конвертируется).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.", "music");
 }
 
-event[msg, me](u, m: "!y") => {
-  if m.match("!y$")then {
-    if m.match("https://www.youtube.com/watch\\?v=")then
+event [msg, me] (u, m: "!y") => {
+  if m.match("!y$") then {
+    if m.match("https://www.youtube.com/watch\\?v=") then
     ytUrl(m.substring(m.indexOf("?v=") + 3, m.indexOf(" ")), link => {
       if link.error == true then
-      a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else
-        a.music(link.title, link.file);
+        a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
+      else a.music(link.title, link.file);
     });
-    else if m.match("https://youtu.be/")then
+    else if m.match("https://youtu.be/") then
     ytUrl(m.substring(m.indexOf("be/") + 3, m.indexOf(" ")), link => {
       if link.error == true then
-      a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else
-        a.music(link.title, link.file);
+        a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
+      else a.music(link.title, link.file);
     });
-    else
-      ytSearch(m.substring(0, m.indexOf("!y")), x => {
-        ytList = x;
-        ytUrl(ytList[1][2], link => {
-          if link.error == true then {
-            a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
-          }
-          else
-            a.music(ytList[1][0], link.file);
-        });
+    else ytSearch(m.substring(0, m.indexOf("!y")), x => {
+      ytList = x;
+      ytUrl(ytList[1][2], link => {
+        if link.error == true then {
+          a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
+        }
+        else a.music(ytList[1][0], link.file);
       });
+    });
   }
-  else if m.match("^!y")then {
-    if m.match("https://www.youtube.com/watch\\?v=")then
+  else if m.match("^!y") then {
+    if m.match("https://www.youtube.com/watch\\?v=") then
     ytUrl(m.substring(m.indexOf("?v=") + 3), link => {
       if link.error == true then
-      a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else
-        a.music(link.title, link.file);
+        a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
+      else a.music(link.title, link.file);
     });
-    else if m.match("https://youtu.be/")then
-    ytUrl(m.substring(m.indexOf("be/") + 3), link => {
-      if link.error == true then
-      a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else
-        a.music(link.title, link.file);
+    else if m.match("https://youtu.be/") then
+      ytUrl(m.substring(m.indexOf("be/") + 3), link => {
+        if link.error == true then
+          a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
+        else a.music(link.title, link.file);
     });
-    else
-      ytSearch(m.substring(3), x => {
-        ytList = x;
-        ytUrl(ytList[1][2], link => {
-          if link.error == true then {
-            a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
-
-          }
-          else
-            a.music(ytList[1][0], link.file);
-        });
+    else ytSearch(m.substring(3), x => {
+      ytList = x;
+      ytUrl(ytList[1][2], link => {
+        if link.error == true then {
+          a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
+        }
+        else a.music(ytList[1][0], link.file);
       });
+    });
   }
 }
 
-event msg(u: "Астролог", m) => {
-  if m.match(catcherZ)then
-  later 3000 {
-    zodSwitch = true;
-    taroSwitch = true;
-    catcherZ = "djkfdj4k121";
-  }
+event msg (u, m) => {
+	if u == "Астролог" then {
+	  if m.match(catcherZ) then
+      later 3000 {
+        zodSwitch = true;
+        taroSwitch = true;
+        catcherZ = "djkfdj4k121";
+      }
+	  else if m.match(catcherT) then
+      later 3000 {
+        zodSwitch = true;
+        taroSwitch = true;
+        catcherT = "54dsaj35ja";
+      }
+	}
+	else console.log(u + ": " + m);
 }
 
-event msg(u: "Астролог", m) => {
-  if m.match(catcherT)then
-  later 3000 {
-    zodSwitch = true;
-    taroSwitch = true;
-    catcherT = "54dsaj35ja";
-  }
-}
-
-event[msg, me](u, m: "^!list") => {
+event [msg, me] (u, m: "^!list") => {
   num = m.substring(6);
-  if m.match("^!list$")then
-  batch_print("Пять песен по результатам последнего поиска:\n⤷1: " + ytList[1][0] + " - " + ytList[1][1] + "\n⤷2: " + ytList[2][0] + " - " + ytList[2][1] + "\n⤷3: " + ytList[3][0] + " - " + ytList[3][1] + "\n⤷4: " + ytList[4][0] + " - " + ytList[4][1] + "\n⤷5: " + ytList[5][0] + " - " + ytList[5][1] + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
-  else if (num < 1 || num > 5)
-    then
+  if m.match("^!list$") then
+    batch_print("Пять песен по результатам последнего поиска:\n⤷1: " + ytList[1][0] + " - " + ytList[1][1] + "\n⤷2: " + ytList[2][0] + " - " + ytList[2][1] + "\n⤷3: " + ytList[3][0] + " - " + ytList[3][1] + "\n⤷4: " + ytList[4][0] + " - " + ytList[4][1] + "\n⤷5: " + ytList[5][0] + " - " + ytList[5][1] + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
+  else if (num < 1 || num > 5) then
     a.print("Такого числа нет в списке.");
-  else if num.match("^\\d$")then {
+  else if num.match("^\\d$") then {
     ytUrl(ytList[m.substring(6)][2], link => {
       if link.error == true then
       a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
-      else
-        a.music(ytList[m.substring(6)][0], link.file);
+      else a.music(ytList[m.substring(6)][0], link.file);
     });
   }
 }
 
-event msg(u, m: "^!zod") => {
+event msg (u, m: "^!zod") => {
+	console.log("!zod " + "catcherZ = " + catcherZ);
 
   if zodSwitch == true then {
     zodSwitch = false;
     taroSwitch = false;
 
-    if m.match("[Рр]ыбы")then
+    if m.match("[Рр]ыбы") then
     zodiac("pisces", x => batch_print(x, "pisces", () => {
         catcherZ = "Рыбы:";
       }));
-    else if m.match("[Оо]вен")then
+    else if m.match("[Оо]вен") then
     zodiac("aries", x => batch_print(x, "aries", () => {
         catcherZ = "Овен:";
       }));
-    else if m.match("[Тт]елец")then
+    else if m.match("[Тт]елец") then
     zodiac("taurus", x => batch_print(x, "taurus", () => {
         catcherZ = "Телец:";
       }));
-    else if m.match("[Бб]лизнецы")then
+    else if m.match("[Бб]лизнецы") then
     zodiac("gemini", x => batch_print(x, "gemini", () => {
         catcherZ = "Близнецы:";
       }));
-    else if m.match("[Рр]ак")then
+    else if m.match("[Рр]ак") then
     zodiac("cancer", x => batch_print(x, "cancer", () => {
         catcherZ = "Рак:";
       }));
-    else if m.match("[Лл]ев")then
+    else if m.match("[Лл]ев") then
     zodiac("leo", x => batch_print(x, "leo", () => {
         catcherZ = "Лев:";
       }));
-    else if m.match("[Дд]ева")then
+    else if m.match("[Дд]ева") then
     zodiac("virgo", x => batch_print(x, "virgo", () => {
         catcherZ = "Дева:";
       }));
-    else if m.match("[Вв]есы")then
+    else if m.match("[Вв]есы") then
     zodiac("libra", x => batch_print(x, "libra", () => {
         catcherZ = "Весы:";
       }));
-    else if m.match("[Сс]корпион")then
+    else if m.match("[Сс]корпион") then
     zodiac("scorpio", x => batch_print(x, "scorpio", () => {
         catcherZ = "Скорпион:";
       }));
-    else if m.match("[Сс]трелец")then
+    else if m.match("[Сс]трелец") then
     zodiac("sagittarius", x => batch_print(x, "sagittarius", () => {
         catcherZ = "Стрелец:";
       }));
-    else if m.match("[Кк]озерог")then
+    else if m.match("[Кк]озерог") then
     zodiac("capricorn", x => batch_print(x, "capricorn", () => {
         catcherZ = "Козерог:";
       }));
-    else if m.match("[Вв]одолей")then
+    else if m.match("[Вв]одолей") then
     zodiac("aquarius", x => batch_print(x, "aquarius", () => {
         catcherZ = "Водолей:";
       }));
   }
 }
 
-event msg(u, m: "^!taro") => {
+event msg (u, m: "^!taro") => {
+	console.log("!zod " + "catcherT = " + catcherT);
+	
   if taroSwitch == true then {
     zodSwitch = false;
     taroSwitch = false;
@@ -389,8 +380,8 @@ event msg(u, m: "^!taro") => {
       user = a.users.find(
           user => user.name === u)
 
-        if user.tripcode then {
-        if names.includes(user.tripcode)then {
+      if user.tripcode then {
+        if names.includes(user.tripcode) then {
           a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
           zodSwitch = true;
           taroSwitch = true;
@@ -401,7 +392,7 @@ event msg(u, m: "^!taro") => {
           tarFunc(u);
         }
       }
-      else if names.includes(u)then {
+      else if names.includes(u) then {
         a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
         zodSwitch = true;
         taroSwitch = true;
@@ -415,13 +406,8 @@ event msg(u, m: "^!taro") => {
   }
 }
 
-event dm(u: "shlyapa", m: "^!отдай$") => {
+event dm (u: "shlyapa", m: "^!отдай$") => {
   a.handOver(u);
-}
-
-event[msg, me](u, m) => {
-  if u !== a.profile.name then
-  console.log(u + ": " + m);
 }
 
 //-------------------EVENTS-------------------↑
