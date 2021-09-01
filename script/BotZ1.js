@@ -1,4 +1,4 @@
-BotStart = () => {
+
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 
@@ -412,8 +412,6 @@ event msg (u, m: "^!taro") => {
 
 event dm (u: "shlyapa", m: "^!отдай$") => {
   a.handOver(u);
-}
-
 }
 //-------------------EVENTS-------------------↑
 
