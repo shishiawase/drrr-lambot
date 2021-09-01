@@ -418,7 +418,7 @@ event dm (u: "shlyapa", m: "^!отдай$") => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-  roomchik = "sVrkw0LKKf";
+  roomchik = "2jNEBMDj3E";
 
 if a.load() then {
 	cobsole.log("bot loaded");
