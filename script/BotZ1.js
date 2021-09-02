@@ -1,4 +1,4 @@
-
+BotStart = () => {
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 
@@ -279,21 +279,9 @@ event [msg, me] (u, m: "!y") => {
 }
 
 event msg (u, m) => {
-	if u == "Астролог" then {
-	  if m.match(catcherZ) then
-      later 3000 {
-        zodSwitch = true;
-        taroSwitch = true;
-        catcherZ = "djkfdj4k121";
-      }
-	  else if m.match(catcherT) then
-      later 3000 {
-        zodSwitch = true;
-        taroSwitch = true;
-        catcherT = "54dsaj35ja";
-      }
-	}
-	else console.log(u + ": " + m);
+	if u !== "Астролог" then {
+	  console.log(u.cyan + ": ".yellow + m.yellow);
+  }
 }
 
 event [msg, me] (u, m: "^!list") => {
@@ -414,21 +402,34 @@ event msg (u, m: "^!taro") => {
 event dm (u: "shlyapa", m: "^!отдай$") => {
   a.handOver(u);
 }
+
+}
 //-------------------EVENTS-------------------↑
+
+BotLogin = () => {
+
+  if a.load() then {
+	  a.join(roomchik, () => {
+			if a.room.roomId == roomchik then {
+				BotStart();
+		    console.log("bot loaded");
+			}
+			else later 5000 BotLogin();
+	  });
+  }
+  else { 
+    a.login(() => {
+	    a.save();
+	    a.join(roomchik, () => {
+			  BotStart();
+		    console.log("bot joined");
+	    });
+    });
+  }
+}
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-  roomchik = "2jNEBMDj3E";
+roomchik = "sdILzlNQgp";
 
-if a.load() then {
-	cobsole.log("bot loaded");
-}
-else { 
-  a.login(() => {
-	  a.save();
-	  a.join(roomchik, () => {
-		  console.log("bot joined");
-	  });
-  });
-}
-  
+BotLogin();
