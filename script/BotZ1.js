@@ -279,9 +279,17 @@ event [msg, me] (u, m: "!y") => {
 }
 
 event msg (u, m) => {
-	if u !== "Астролог" then {
-	  console.log(u.cyan + ": ".yellow + m.yellow);
-  }
+	if u == "Астролог" then {
+		if m.match(catcherZ) then {
+		  zodSwitch = true;
+			taroSwitch = true;
+		}
+		else if m.match(catcherT) then {
+			taroSwitch = true;
+			zodSwitch = true;
+		}
+	}
+	else console.log(u.cyan + ": ".yellow + m.yellow);
 }
 
 event [msg, me] (u, m: "^!list") => {
