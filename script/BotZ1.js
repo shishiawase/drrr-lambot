@@ -430,6 +430,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "sdILzlNQgp";
+roomchik = "2jNEBMDj3E";
 
 BotLogin();
