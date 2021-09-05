@@ -39,7 +39,7 @@ globalThis.ytSearch = (na, call) => {
 	        if (Object.keys(x.items[num]).includes("length")) {
 						return x.items[num].length.simpleText;
 					} else {
-						return 'конченный конвертер зажал время';
+						return 'конченный поисковик зажал время';
 					}
         }
 				
@@ -53,6 +53,32 @@ globalThis.ytSearch = (na, call) => {
 
         call(yt);
 
+    })
+}
+
+globalThis.ytDownload = (id, call) => {
+url = 'https://www.yt-download.org/api/button/mp3/' + id;
+    got(url)
+    .then(resp => {
+			  let dom = new JSDOM(resp.body);
+        let body = dom.window.document.querySelector('body');
+
+        let link = '';
+        let re = new RegExp('^https:\/\/www.yt-download.org\/download\/' + id + '\/mp3\/320', 'gi');
+
+        function recursy (element) {
+            element.childNodes.forEach(node => {
+        
+                if ((node.href || '').match(re)) {
+                    link = node.href + '#.mp3';
+                } else {
+                    recursy(node);
+                }
+            });
+        }
+
+        recursy(body);
+        call(link);
     })
 }
 

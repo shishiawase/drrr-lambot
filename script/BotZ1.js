@@ -135,15 +135,6 @@ tarFunc = (name) => {
 
 ytList = {};
 
-ytUrl = (id, call) => {
-  url = "http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id;
-  axios(url)
-  .then(resp => {
-    nod = resp.data;
-    call(nod);
-  })
-}
-
 //-------------------YOUTUBE-------------------↑
 
 //-------------------TIMERS-------------------↓
@@ -181,8 +172,6 @@ chunkString = (size, str) => {
 }
 
 batch_print = (msg, type, call) => {
-  words = ["music", "aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"];
-  re = new RegExp(words.join("|"), "gi");
   delimiter = ".";
   buffer = "";
   msgs = []
@@ -203,7 +192,7 @@ batch_print = (msg, type, call) => {
   if (buffer.length)
     then msgs.push(buffer);
 
-  if !type.match(re) then {
+  if !type.match("music|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces") then {
     msgs.reverse();
     msgs.forEach(m => a.print(m));
     a.print(Cards[type][1] + ":", Cards[type][0]);
@@ -226,55 +215,22 @@ batch_print = (msg, type, call) => {
 //-------------------EVENTS-------------------↓
 
 event [msg, dm] (u, m: "^!h") => {
-  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!y 'исполнитель - название' - музыкa с ютуба(ждите пока конвертируется).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.", "music");
+  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!y 'исполнитель - название' - музыкa с ютуба(ждите пока конвертируется).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!upd - последнее обновление.", "music");
+}
+
+event [msg, dm] (u, m: "^!upd") => {
+	a.print("v1.7\n⤷Мелкие правки для зодиака.\n⤷Другой конвертер ютуб(нет лимита по времени), лишь бы дорогой \"А\" был спокоен.~ А впрочем похер, просто он шустрее.");
 }
 
 event [msg, me] (u, m: "!y") => {
-  if m.match("!y$") then {
-    if m.match("https://www.youtube.com/watch\\?v=") then
-    ytUrl(m.substring(m.indexOf("?v=") + 3, m.indexOf(" ")), link => {
-      if link.error == true then
-        a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else a.music(link.title, link.file);
-    });
-    else if m.match("https://youtu.be/") then
-    ytUrl(m.substring(m.indexOf("be/") + 3, m.indexOf(" ")), link => {
-      if link.error == true then
-        a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else a.music(link.title, link.file);
-    });
-    else ytSearch(m.substring(0, m.indexOf("!y")), x => {
-      ytList = x;
-      ytUrl(ytList[1][2], link => {
-        if link.error == true then {
-          a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
-        }
-        else a.music(ytList[1][0], link.file);
-      });
-    });
-  }
-  else if m.match("^!y") then {
-    if m.match("https://www.youtube.com/watch\\?v=") then
-    ytUrl(m.substring(m.indexOf("?v=") + 3), link => {
-      if link.error == true then
-        a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-      else a.music(link.title, link.file);
-    });
-    else if m.match("https://youtu.be/") then
-      ytUrl(m.substring(m.indexOf("be/") + 3), link => {
-        if link.error == true then
-          a.print("Трек не должен превышать 5 минут. Длина трека - " + Math.floor(link.duration / 60) + ":" + (link.duration % 60));
-        else a.music(link.title, link.file);
-    });
-    else ytSearch(m.substring(3), x => {
-      ytList = x;
-      ytUrl(ytList[1][2], link => {
-        if link.error == true then {
-          a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
-        }
-        else a.music(ytList[1][0], link.file);
-      });
-    });
+	reY = new RegExp("!y\\s|\\s!y", "gi");
+  if m.match(reY) then {
+    ytSearch(m.replace(reY, ""), ylist =>  {
+			ytList = ylist;
+			ytDownload(ytList[1][2], link => {
+				a.music(ytList[1][0], link);
+			});
+		});
   }
 }
 
@@ -292,6 +248,10 @@ event msg (u, m) => {
 	else console.log(u.cyan + ": ".yellow + m.yellow);
 }
 
+event dm (u, m) => {
+	console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
+}
+
 event [msg, me] (u, m: "^!list") => {
   num = m.substring(6);
   if m.match("^!list$") then
@@ -299,67 +259,63 @@ event [msg, me] (u, m: "^!list") => {
   else if (num < 1 || num > 5) then
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
-    ytUrl(ytList[m.substring(6)][2], link => {
-      if link.error == true then
-      a.print("Трек не должен превышать 5 минут. Длина трека - " + ytList[1][1]);
-      else a.music(ytList[m.substring(6)][0], link.file);
+    ytDownload(ytList[m.substring(6)][2], link => {
+      a.music(ytList[m.substring(6)][0], link);
     });
   }
 }
 
 event msg (u, m: "^!zod") => {
-	console.log("!zod " + "catcherZ = " + catcherZ);
-  console.log("zodSwitch = " + zodSwitch);
 	
   if zodSwitch == true then {
     zodSwitch = false;
     taroSwitch = false;
 
-    if m.match("[Рр]ыбы") then
+    if m.match("[Рр][Ыы][Бб][Ыы]|[Pp][Ii][Ss][Cc][Ee][Ss]") then
     zodiac("pisces", x => batch_print(x, "pisces", () => {
         catcherZ = "Рыбы:";
       }));
-    else if m.match("[Оо]вен") then
+    else if m.match("[Оо][Вв][Ее][Нн]|[Aa][Rr][Ii][Ee][Ss]") then
     zodiac("aries", x => batch_print(x, "aries", () => {
         catcherZ = "Овен:";
       }));
-    else if m.match("[Тт]елец") then
+    else if m.match("[Тт][Ее][Лл][Ее][Цц]|[Tt][Aa][Uu][Rr][Uu][Ss]") then
     zodiac("taurus", x => batch_print(x, "taurus", () => {
         catcherZ = "Телец:";
       }));
-    else if m.match("[Бб]лизнецы") then
+    else if m.match("[Бб][Лл][Ии][Зз][Нн][Ее][Цц][Ыы]|[Gg][Ee][Mm][Ii][Nn][Ii]") then
     zodiac("gemini", x => batch_print(x, "gemini", () => {
         catcherZ = "Близнецы:";
       }));
-    else if m.match("[Рр]ак") then
+    else if m.match("[Рр][Аа][Кк]|[Cc][Aa][Nn][Cc][Ee][Rr]") then
     zodiac("cancer", x => batch_print(x, "cancer", () => {
         catcherZ = "Рак:";
       }));
-    else if m.match("[Лл]ев") then
+    else if m.match("[Лл][Ее][Вв]|[Ll][Ee][Oo]") then
     zodiac("leo", x => batch_print(x, "leo", () => {
         catcherZ = "Лев:";
       }));
-    else if m.match("[Дд]ева") then
+    else if m.match("[Дд][Ее][Вв][Аа]|[Vv][Ii][Rr][Gg][Oo]") then
     zodiac("virgo", x => batch_print(x, "virgo", () => {
         catcherZ = "Дева:";
       }));
-    else if m.match("[Вв]есы") then
+    else if m.match("[Вв][Ее][Сс][Ыы]|[Ll][Ii][Bb][Rr][Aa]") then
     zodiac("libra", x => batch_print(x, "libra", () => {
         catcherZ = "Весы:";
       }));
-    else if m.match("[Сс]корпион") then
+    else if m.match("[Сс][Кк][Оо][Рр][Пп][Ии][Оо][Нн]|[Ss][Cc][Oo][Rr][Pp][Ii][Oo]") then
     zodiac("scorpio", x => batch_print(x, "scorpio", () => {
         catcherZ = "Скорпион:";
       }));
-    else if m.match("[Сс]трелец") then
+    else if m.match("[Сс][Тт][Рр][Ее][Лл][Ее][Цц]|[Ss][Aa][Gg][Ii][Tt][Tt][Aa][Rr][Ii][Uu][Ss]") then
     zodiac("sagittarius", x => batch_print(x, "sagittarius", () => {
         catcherZ = "Стрелец:";
       }));
-    else if m.match("[Кк]озерог") then
+    else if m.match("[Кк][Оо][Зз][Ее][Рр][Оо][Гг]|[Cc][Aa][Pp][Rr][Ii][Cc][Oo][Rr][Nn]") then
     zodiac("capricorn", x => batch_print(x, "capricorn", () => {
         catcherZ = "Козерог:";
       }));
-    else if m.match("[Вв]одолей") then
+    else if m.match("[Вв][Оо][Дд][Оо][Лл][Ее][Йй]|[Aa][Qq][Uu][Aa][Rr][Ii][Uu][Ss]") then
     zodiac("aquarius", x => batch_print(x, "aquarius", () => {
         catcherZ = "Водолей:";
       }));
@@ -371,8 +327,7 @@ event msg (u, m: "^!zod") => {
 }
 
 event msg (u, m: "^!taro") => {
-	console.log("!zod " + "catcherT = " + catcherT);
-	console.log("taroSwitch = " + taroSwitch);
+
   if taroSwitch == true then {
     zodSwitch = false;
     taroSwitch = false;
@@ -407,8 +362,14 @@ event msg (u, m: "^!taro") => {
   }
 }
 
-event dm (u: "shlyapa", m: "^!отдай$") => {
-  a.handOver(u);
+event dm (u, m: "^!отдай$") => {
+	a.getLoc(() => {
+		user = a.users.find(
+		  user => user.name == u)
+			
+		if user.tripcode == "Leu5XTRpi6" then
+		  a.handOver(u);
+	})
 }
 
 }
@@ -421,6 +382,9 @@ BotLogin = () => {
 			if a.room.roomId == roomchik then {
 				BotStart();
 		    console.log("bot loaded");
+				
+				if a.room.description !== "night | !h - инфа по командам | v1.7" then
+				  a.descr("night | !h - инфа по командам | v1.7");
 			}
 			else later 5000 BotLogin();
 	  });
