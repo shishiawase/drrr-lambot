@@ -215,7 +215,7 @@ batch_print = (msg, type, call) => {
 //-------------------EVENTS-------------------↓
 
 event [msg, dm] (u, m: "^!h") => {
-  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!y 'исполнитель - название' - музыкa с ютуба(ждите пока конвертируется).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!upd - последнее обновление.", "music");
+  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба(ждите пока конвертируется).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!upd - последнее обновление.", "music");
 }
 
 event [msg, dm] (u, m: "^!upd") => {
@@ -224,9 +224,7 @@ event [msg, dm] (u, m: "^!upd") => {
 
 event [msg, me] (u, m: "!y") => {
 	reY = new RegExp("!y\\s|\\s!y", "gi");
-	if m.match("⤷!y") then
-	  console.log("help");
-  else if m.match(reY) then {
+	if m.match(reY) then {
     ytSearch(m.replace(reY, ""), ylist =>  {
 			ytList = ylist;
 			ytDownload(ytList[1][2], link => {
