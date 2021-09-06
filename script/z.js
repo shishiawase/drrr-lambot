@@ -57,7 +57,7 @@ globalThis.ytSearch = (na, call) => {
 }
 
 globalThis.ytDownload = (id, call) => {
-url = 'https://www.yt-download.org/api/button/mp3/' + id;
+url = 'https://api.allorigins.win/raw?url=https://www.yt-download.org/api/button/mp3/' + id;
     got(url)
     .then(resp => {
 			  let dom = new JSDOM(resp.body);
@@ -70,7 +70,7 @@ url = 'https://www.yt-download.org/api/button/mp3/' + id;
             element.childNodes.forEach(node => {
         
                 if ((node.href || '').match(re)) {
-                    link = node.href + '#.mp3';
+                    link = node.href;
                 } else {
                     recursy(node);
                 }

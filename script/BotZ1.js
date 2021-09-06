@@ -222,7 +222,7 @@ event [msg, dm] (u, m: "^!upd") => {
 	a.print("v1.7\n⤷Мелкие правки для зодиака.");
 }
 
-/*event [msg, me] (u, m: "!y") => {
+event [msg, me] (u, m: "!y") => {
 	reY = new RegExp("!y\\s|\\s!y", "gi");
 	if m.match(reY) then {
     ytSearch(m.replace(reY, ""), ylist =>  {
@@ -234,7 +234,7 @@ event [msg, dm] (u, m: "^!upd") => {
 			});
 		});
   }
-}*/
+}
 
 event msg (u, m) => {
 	if u == "Астролог" then {
@@ -254,7 +254,7 @@ event dm (u, m) => {
 	console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
 }
 
-/*event [msg, me] (u, m: "^!list") => {
+event [msg, me] (u, m: "^!list") => {
   num = m.substring(6);
   if m.match("^!list$") then
     batch_print("Пять песен по результатам последнего поиска:\n⤷1: " + ytList[1][0] + " - " + ytList[1][1] + "\n⤷2: " + ytList[2][0] + " - " + ytList[2][1] + "\n⤷3: " + ytList[3][0] + " - " + ytList[3][1] + "\n⤷4: " + ytList[4][0] + " - " + ytList[4][1] + "\n⤷5: " + ytList[5][0] + " - " + ytList[5][1] + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
@@ -265,7 +265,7 @@ event dm (u, m) => {
       a.music(ytList[m.substring(6)][0], link);
     });
   }
-}*/
+}
 
 event msg (u, m: "^!zod") => {
 	
@@ -401,6 +401,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "2jNEBMDj3E";
+roomchik = "sEOqUgw5NU";
 
 BotLogin();
