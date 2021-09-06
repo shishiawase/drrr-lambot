@@ -226,8 +226,10 @@ event [msg, me] (u, m: "!y") => {
 	reY = new RegExp("!y\\s|\\s!y", "gi");
 	if m.match(reY) then {
     ytSearch(m.replace(reY, ""), ylist =>  {
+			console.log(ylist);
 			ytList = ylist;
 			ytDownload(ytList[1][2], link => {
+				console.log(link);
 				a.music(ytList[1][0], link);
 			});
 		});

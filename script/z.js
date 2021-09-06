@@ -64,13 +64,13 @@ url = 'https://www.yt-download.org/api/button/mp3/' + id;
         let body = dom.window.document.querySelector('body');
 
         let link = '';
-        let re = new RegExp('^https:\/\/www.yt-download.org\/download\/' + id + '\/mp3\/320', 'gi');
+        let re = new RegExp("^https:\/\/www.yt-download.org\/download\/" + id + "\/mp3\/320", "gi");
 
         function recursy (element) {
             element.childNodes.forEach(node => {
         
                 if ((node.href || '').match(re)) {
-                    link = node.href + '.mp3';
+                    link = node.href + '#.mp3';
                 } else {
                     recursy(node);
                 }
