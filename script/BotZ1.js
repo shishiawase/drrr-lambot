@@ -224,7 +224,9 @@ event [msg, dm] (u, m: "^!upd") => {
 
 event [msg, me] (u, m: "!y") => {
 	reY = new RegExp("!y\\s|\\s!y", "gi");
-  if m.match(reY) then {
+	if m.match("⤷!y") then
+	  return 0;
+  else if m.match(reY) then {
     ytSearch(m.replace(reY, ""), ylist =>  {
 			ytList = ylist;
 			ytDownload(ytList[1][2], link => {
@@ -402,6 +404,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "2jNEBMDj3E";
+roomchik = "siivCUsP43";
 
 BotLogin();
