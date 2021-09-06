@@ -1,4 +1,4 @@
-var axios = require('axios');
+var axios = require('./node_modules/axios');
 
 globalThis.ggg = (call) => {
 var options = {
