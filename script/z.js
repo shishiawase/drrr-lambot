@@ -70,7 +70,7 @@ url = 'https://www.yt-download.org/api/button/mp3/' + id;
             element.childNodes.forEach(node => {
         
                 if ((node.href || '').match(re)) {
-                    link = node.href + '#.mp3';
+                    link = node.href + '.mp3';
                 } else {
                     recursy(node);
                 }
