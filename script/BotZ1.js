@@ -255,9 +255,9 @@ event [msg, me] (u, m: "!y") => {
     ytSearch(m.replace(reY, ""), ylist =>  {
 			ytList = ylist;
 			listDel(ytList.length);
-			console.log(ytList);
 			ytDownload(ytList[1][2], data => {
-				a.music(ytList[1][0], data + "");
+				console.log(data);
+				a.music(ytList[1][0], data + "#.mp3");
 			});
 		});
   }
@@ -431,6 +431,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "Y3XTbeuPNI";
+roomchik = "QtooYioC9P";
 
 BotLogin();

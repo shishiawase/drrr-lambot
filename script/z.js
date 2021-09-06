@@ -80,6 +80,32 @@ globalThis.ytSearch = (na, call) => {
 }*/
 
 globalThis.ytDownload = (id, call) => {
+    let scrape = async() => {
+
+        const browser = await puppeteer.launch({
+            headless: true
+        });
+        const page = await browser.newPage();
+        await page.goto('https://www.yt-download.org/api/button/mp3/' + id, {
+					  waitUntil: 'networkidle0',
+				});
+
+        const result = await page.evaluate(() => {
+            
+						let data = document.querySelector("body > div > div > div > div > a:nth-child(1)").href;
+
+            return data;
+        })
+
+        await browser.close();
+        return result;
+				
+    }
+
+    scrape().then(x => call(x)).catch(console.log);
+};
+
+/*globalThis.ytDownload = (id, call) => {
 url = 'https://www.yt-download.org/api/button/mp3/' + id;
     got(url)
     .then(resp => {
@@ -103,7 +129,7 @@ url = 'https://www.yt-download.org/api/button/mp3/' + id;
         recursy(body);
         call(link);
     })
-} //работает, но не везде//
+}*/ //работает, но не везде//
 
 globalThis.taro = (call) => {
     let scrape = async() => {
