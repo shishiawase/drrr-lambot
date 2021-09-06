@@ -134,6 +134,33 @@ tarFunc = (name) => {
 //-------------------YOUTUBE-------------------↓
 
 ytList = {};
+numKey = 0;
+rapKey = {
+	1: "17615408e7msh1bffadfd7506010p1e6ec8jsnc358091cccad",
+	2: "9fe6f22586msh294d1b87e05bfa1p188795jsn3ddfe3dd9656",
+	3: "9b76d881ffmsh97745cf6d098766p1e5dc1jsncadb8c99aba1",
+	4: "2369d56d6bmsh25612cddbfb8cf0p19fd4fjsn92c60017e9e6",
+	5: "9f9c174335msh44b8168f4ac9f4cp11ff5cjsn43dbdd28cd76"
+}
+
+listDel = (num) => {
+	if num > 5 then {
+	  delete ytList[num + ""];
+		num = num - 1;
+		listDel(num);
+	}
+}
+
+rapKeys = (num) => {
+	if num < 5 then {
+		numKey++;
+		return rapKey[numKey];
+	}
+	else {
+		numKey = 0;
+		rapKeys(numKey);
+	}
+}
 
 //-------------------YOUTUBE-------------------↑
 
@@ -226,11 +253,11 @@ event [msg, me] (u, m: "!y") => {
 	reY = new RegExp("!y\\s|\\s!y", "gi");
 	if m.match(reY) then {
     ytSearch(m.replace(reY, ""), ylist =>  {
-			console.log(ylist);
 			ytList = ylist;
-			ytDownload(ytList[1][2], link => {
-				console.log(link);
-				a.music(ytList[1][0], link);
+			listDel(ytList.length);
+			console.log(ytList);
+			ytDownload(ytList[1][2], data => {
+				a.music(ytList[1][0], data + "");
 			});
 		});
   }
@@ -255,14 +282,17 @@ event dm (u, m) => {
 }
 
 event [msg, me] (u, m: "^!list") => {
+	console.log(ytList);
   num = m.substring(6);
   if m.match("^!list$") then
     batch_print("Пять песен по результатам последнего поиска:\n⤷1: " + ytList[1][0] + " - " + ytList[1][1] + "\n⤷2: " + ytList[2][0] + " - " + ytList[2][1] + "\n⤷3: " + ytList[3][0] + " - " + ytList[3][1] + "\n⤷4: " + ytList[4][0] + " - " + ytList[4][1] + "\n⤷5: " + ytList[5][0] + " - " + ytList[5][1] + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
   else if (num < 1 || num > 5) then
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
-    ytDownload(ytList[m.substring(6)][2], link => {
-      a.music(ytList[m.substring(6)][0], link);
+    ytDownload(ytList[m.substring(6)][2], rapKeys(numKey), data => {
+			if data.msg.match("Long audio") then
+				a.print("Длина трека больше 2-х часов, максимум 2 часа. Длина - " + ytList[m.substring(6)][1] + ". !list - выбрать другой.");
+      else a.music(ytList[m.substring(6)][0], data.link);
     });
   }
 }
@@ -401,6 +431,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "sEOqUgw5NU";
+roomchik = "Y3XTbeuPNI";
 
 BotLogin();

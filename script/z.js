@@ -34,6 +34,7 @@ globalThis.zodiac = (type, call) => {
 
 globalThis.ytSearch = (na, call) => {
     youtubesearchapi.GetListByKeyword(na, false).then(x => {
+			  let yt = {};
 			
 			  check = (num) => {
 	        if (Object.keys(x.items[num]).includes("length")) {
@@ -43,21 +44,43 @@ globalThis.ytSearch = (na, call) => {
 					}
         }
 				
-        let yt = {
-            1: [x.items[0].title, check(0), x.items[0].id],
-            2: [x.items[1].title, check(1), x.items[1].id],
-            3: [x.items[2].title, check(2), x.items[2].id],
-            4: [x.items[3].title, check(3), x.items[3].id],
-            5: [x.items[4].title, check(4), x.items[4].id]
-        };
-
-        call(yt);
+				searchLen = (len) => {
+				
+					if (len < x.items.length) {
+						len++;
+					  yt[len] = [x.items[len - 1].title, check(len - 1), x.items[len - 1].id];
+						searchLen(len);
+					} else {
+						call(yt);
+					}
+				}
+				
+				searchLen(0);
 
     })
 }
 
+/*globalThis.ytDownload = (ytID, rKey, call) => {
+	var options = {
+        method: 'GET',
+        url: 'https://youtube-mp36.p.rapidapi.com/dl',
+        params: {id: ytID},
+        headers: {
+            'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com',
+            'x-rapidapi-key': rKey 
+        }
+    };
+
+    axios.request(options).then(function (response) {
+			console.log(response.data.link);
+	    call(response.data);
+    }).catch(function (error) {
+	    console.error(error);
+    });
+}*/
+
 globalThis.ytDownload = (id, call) => {
-url = 'https://api.allorigins.win/raw?url=https://www.yt-download.org/api/button/mp3/' + id;
+url = 'https://www.yt-download.org/api/button/mp3/' + id;
     got(url)
     .then(resp => {
 			  let dom = new JSDOM(resp.body);
@@ -70,7 +93,7 @@ url = 'https://api.allorigins.win/raw?url=https://www.yt-download.org/api/button
             element.childNodes.forEach(node => {
         
                 if ((node.href || '').match(re)) {
-                    link = node.href;
+                    link = node.href + '#.mp3';
                 } else {
                     recursy(node);
                 }
@@ -80,7 +103,7 @@ url = 'https://api.allorigins.win/raw?url=https://www.yt-download.org/api/button
         recursy(body);
         call(link);
     })
-}
+} //работает, но не везде
 
 globalThis.taro = (call) => {
     let scrape = async() => {
