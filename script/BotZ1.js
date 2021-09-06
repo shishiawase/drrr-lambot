@@ -225,7 +225,7 @@ event [msg, dm] (u, m: "^!upd") => {
 event [msg, me] (u, m: "!y") => {
 	reY = new RegExp("!y\\s|\\s!y", "gi");
 	if m.match("⤷!y") then
-	  return 0;
+	  console.log("help");
   else if m.match(reY) then {
     ytSearch(m.replace(reY, ""), ylist =>  {
 			ytList = ylist;
