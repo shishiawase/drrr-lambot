@@ -103,7 +103,7 @@ url = 'https://www.yt-download.org/api/button/mp3/' + id;
         recursy(body);
         call(link);
     })
-} //работает, но не везде
+} //работает, но не везде//
 
 globalThis.taro = (call) => {
     let scrape = async() => {
