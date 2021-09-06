@@ -384,9 +384,6 @@ BotLogin = () => {
 			if a.room.roomId == roomchik then {
 				BotStart();
 		    console.log("bot loaded");
-				
-				if a.room.description !== "night | !h - инфа по командам | v1.7" then
-				  a.descr("night | !h - инфа по командам | v1.7");
 			}
 			else later 5000 BotLogin();
 	  });
