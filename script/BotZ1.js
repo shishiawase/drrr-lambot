@@ -1,4 +1,3 @@
-BotStart = () => {
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 
@@ -132,57 +131,23 @@ tarFunc = (name) => {
 //-------------------TARO-------------------↑
 
 //-------------------YOUTUBE-------------------↓
-
+ytSwitch = true;
 ytList = {};
-numKey = 0;
-rapKey = {
-	1: "17615408e7msh1bffadfd7506010p1e6ec8jsnc358091cccad",
-	2: "9fe6f22586msh294d1b87e05bfa1p188795jsn3ddfe3dd9656",
-	3: "9b76d881ffmsh97745cf6d098766p1e5dc1jsncadb8c99aba1",
-	4: "2369d56d6bmsh25612cddbfb8cf0p19fd4fjsn92c60017e9e6",
-	5: "9f9c174335msh44b8168f4ac9f4cp11ff5cjsn43dbdd28cd76"
-}
 
-listDel = (num) => {
-	if num > 5 then {
-	  delete ytList[num + ""];
-		num = num - 1;
-		listDel(num);
-	}
-}
-
-rapKeys = (num) => {
-	if num < 5 then {
-		numKey++;
-		return rapKey[numKey];
-	}
-	else {
-		numKey = 0;
-		rapKeys(numKey);
-	}
+ytLink = (id, call) => {
+	
+	axios("https://api.allorigins.win/raw?url=http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id)
+	  .then(resp => {
+			data = resp.data;
+			
+			if data.error !== true then {
+			  call(data.file);
+			}
+			else call("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+		})
 }
 
 //-------------------YOUTUBE-------------------↑
-
-//-------------------TIMERS-------------------↓
-
-time = (type) => {
-  date = new Date();
-  return date[type]();
-}
-
-timer 60000 * 60 {
-  if time("getHours") == 20 then {
-    upZod();
-    names = [];
-  }
-}
-
-timer 60000 * 15 {
-  a.dm(a.profile.name, ".");
-}
-
-//-------------------TIMERS-------------------↑
 
 //-------------------LONGMSG-------------------↓
 
@@ -238,32 +203,69 @@ batch_print = (msg, type, call) => {
 }
 
 //-------------------LONGMSG-------------------↑
-//
-//-------------------EVENTS-------------------↓
 
-event [msg, dm] (u, m: "^!h") => {
-  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба(на доработке).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!upd - последнее обновление.", "music");
+state restartBot {
+	BotLogin();
 }
 
-event [msg, dm] (u, m: "^!upd") => {
-	a.print("v1.7\n⤷Мелкие правки для зодиака.");
+state beginBot {
+//-------------------TIMERS-------------------↓
+
+time = (type) => {
+  date = new Date();
+  return date[type]();
 }
 
-event [msg, me] (u, m: "!y") => {
-	reY = new RegExp("!y\\s|\\s!y", "gi");
-	if m.match(reY) then {
-    ytSearch(m.replace(reY, ""), ylist =>  {
-			ytList = ylist;
-			listDel(ytList.length);
-			ytDownload(ytList[1][2], data => {
-				console.log(data);
-				a.music(ytList[1][0], data + "#.mp3");
-			});
-		});
+timer 60000 * 60 {
+  if time("getHours") == 20 then {
+    upZod();
+    names = [];
   }
 }
 
-event msg (u, m) => {
+timer 60000 * 2 {
+	a.getLoc(() => {
+		if a.room.roomId == roomchik then
+		  a.dm(a.profile.name, ".");
+		else going restartBot;
+	});
+}
+
+//-------------------TIMERS-------------------↑
+
+//-------------------EVENTS-------------------↓
+
+event [msg, dm] (u, m: "^!h") => {
+  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!upd - последнее обновление.", "music");
+}
+
+event [msg, dm] (u, m: "^!upd") => {
+	a.print("v1.8\n⤷Возвращение музыки. Нашел парочку нормальных конверторов, но их создатели блочат использование на серверах. Снова Бельгия =)");
+}
+
+event [msg, me] (u, m: "!y") => {
+	if ytSwitch == true then {
+		ytSwitch = false;
+		
+	  reY = new RegExp("!y\\s|\\s!y", "gi");
+	  if m.match(reY) then {
+      ytSearch(m.replace(reY, ""), ylist =>  {
+			  ytList = ylist;
+			  ytLink(ytList[1][2], data => {
+				  if data.match("^Длина") then
+				    a.print(data, "", () => {
+							ytSwitch = true;
+						});
+				  else a.music(ytList[1][0], data, () => {
+						ytSwitch = true;
+					});
+			  });
+		  });
+    }
+	}
+}
+
+event [msg, me] (u, m) => {
 	if u == "Астролог" then {
 		if m.match(catcherZ) then {
 		  zodSwitch = true;
@@ -289,10 +291,10 @@ event [msg, me] (u, m: "^!list") => {
   else if (num < 1 || num > 5) then
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
-    ytDownload(ytList[m.substring(6)][2], rapKeys(numKey), data => {
-			if data.msg.match("Long audio") then
-				a.print("Длина трека больше 2-х часов, максимум 2 часа. Длина - " + ytList[m.substring(6)][1] + ". !list - выбрать другой.");
-      else a.music(ytList[m.substring(6)][0], data.link);
+    ytLink(ytList[m.substring(6)][2], data => {
+			if data.match("^Длина") then
+				  a.print(data);
+			else a.music(ytList[m.substring(6)][0], data);
     });
   }
 }
@@ -405,6 +407,8 @@ event dm (u, m: "^!отдай$") => {
 }
 
 }
+
+
 //-------------------EVENTS-------------------↑
 
 BotLogin = () => {
@@ -412,8 +416,8 @@ BotLogin = () => {
   if a.load() then {
 	  a.join(roomchik, () => {
 			if a.room.roomId == roomchik then {
-				BotStart();
-		    console.log("bot loaded");
+				console.log("bot loaded");
+				going beginBot;
 			}
 			else later 5000 BotLogin();
 	  });
@@ -422,8 +426,8 @@ BotLogin = () => {
     a.login(() => {
 	    a.save();
 	    a.join(roomchik, () => {
-			  BotStart();
-		    console.log("bot joined");
+			  console.log("bot joined");
+				going beginBot;
 	    });
     });
   }
@@ -431,6 +435,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "QtooYioC9P";
+roomchik = "2jNEBMDj3E";
 
 BotLogin();

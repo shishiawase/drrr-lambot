@@ -1,8 +1,11 @@
+const { SocksProxyAgent } = require('socks-proxy-agent');
 const got = require('got');
 const puppeteer = require('puppeteer');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const youtubesearchapi = require('youtube-search-api');
+
+const agent = new SocksProxyAgent('socks5://127.0.0.1:9050');
 
 globalThis.zodiac = (type, call) => {
     url = 'https://horo.mail.ru/prediction/' + type + '/today/';
@@ -79,7 +82,7 @@ globalThis.ytSearch = (na, call) => {
     });
 }*/
 
-globalThis.ytDownload = (id, call) => {
+/*globalThis.ytDownload = (id, call) => {
     let scrape = async() => {
 
         const browser = await puppeteer.launch({
@@ -103,12 +106,15 @@ globalThis.ytDownload = (id, call) => {
     }
 
     scrape().then(x => call(x)).catch(console.log);
-};
+};*/
 
 /*globalThis.ytDownload = (id, call) => {
-url = 'https://www.yt-download.org/api/button/mp3/' + id;
-    got(url)
+url = 'https://www.yt-download.org/file/mp3/' + id;
+    got(url, {
+			httpsAgent: agent, 
+		})
     .then(resp => {
+			  console.log(resp);
 			  let dom = new JSDOM(resp.body);
         let body = dom.window.document.querySelector('body');
 
