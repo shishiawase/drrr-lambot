@@ -223,7 +223,7 @@ timer 60000 * 60 {
   }
 }
 
-timer 60000 * 2 {
+timer 60000 * 15 {
 	a.getLoc(() => {
 		if a.room.roomId == roomchik then
 		  a.dm(a.profile.name, ".");
