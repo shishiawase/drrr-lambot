@@ -273,7 +273,7 @@ time = (type) => {
 }
 
 timer 60000 * 60 {
-  if time("getHours") == 20 then {
+  if time("getHours") == 21 then {
     upZod();
     names = [];
   }
