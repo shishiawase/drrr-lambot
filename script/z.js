@@ -47,6 +47,16 @@ globalThis.ytSearch = (na, call) => {
 					}
         }
 				
+				delList = () => {
+					
+					if (Object.keys(yt).length > 5) {
+						delete yt[Object.keys(yt).length];
+						delList();
+					} else {
+						call(yt);
+					}
+				}
+				
 				searchLen = (len) => {
 				
 					if (len < x.items.length) {
@@ -54,7 +64,7 @@ globalThis.ytSearch = (na, call) => {
 					  yt[len] = [x.items[len - 1].title, check(len - 1), x.items[len - 1].id];
 						searchLen(len);
 					} else {
-						call(yt);
+						delList();
 					}
 				}
 				

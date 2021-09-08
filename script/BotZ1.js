@@ -133,6 +133,37 @@ tarFunc = (name) => {
 //-------------------YOUTUBE-------------------↓
 ytSwitch = true;
 ytList = {};
+ytText = "";
+ytQText = "";
+ytQueue = {
+	"on": [],
+	"title": [],
+	"time": [],
+	"name": [],
+	"link": []
+};
+
+queue = (num) => {
+	console.log(ytQueue.title.length);
+	if ytQueue.title.length >= 2 then {
+		
+		if num < (ytQueue.title.length - 1) then {
+			num++;
+			ytQText = ytQText + ("\n⤷" + num + ". " + ytQueue.title[num] + " - добавил " + ytQueue.name[num]);
+			queue(num);
+		}
+		else return ytQText;
+	}
+}
+
+listText = (num) => {
+	if num < Object.keys(ytList).length then {
+		num++;
+	  ytText = ytText + "\n⤷" + num + ": " + ytList[num][0] + " - " + ytList[num][1];
+		listText(num);
+	}
+	else return ytText;
+}
 
 ytLink = (id, call) => {
 	
@@ -202,6 +233,31 @@ batch_print = (msg, type, call) => {
   }
 }
 
+batch_dm = (name, msg) => {
+  delimiter = ".";
+  buffer = "";
+  msgs = []
+  msg.split(delimiter).forEach(ctx => {
+    if ctx.length then
+    chunkString(135, ctx + delimiter).forEach(chk => {
+      if (buffer.length + chk.length)
+         > 135
+        then {
+          msgs.push(buffer);
+          buffer = chk
+        }
+      else {
+        buffer = buffer + chk;
+      }
+    })
+  })
+  if (buffer.length)
+    then msgs.push(buffer);
+
+  msgs.reverse();
+  msgs.forEach(m => a.dm(name, m));
+}
+
 //-------------------LONGMSG-------------------↑
 
 state restartBot {
@@ -223,6 +279,23 @@ timer 60000 * 60 {
   }
 }
 
+timer 3000 {
+	if Object.values(ytQueue.on).length then {
+	  if ytQueue.on[0] == false then {
+		  ytQueue.on[0] = true;
+			a.music(ytQueue.title[0], ytQueue.link[0], () => {
+				later ytQueue.time[0] {
+			    ytQueue.on.splice(0,1);
+				  ytQueue.title.splice(0,1);
+				  ytQueue.time.splice(0,1);
+				  ytQueue.name.splice(0,1);
+				  ytQueue.link.splice(0,1);
+		    }
+			});
+	  }
+  }
+}
+
 timer 60000 * 15 {
 	a.getLoc(() => {
 		if a.room.roomId == roomchik then
@@ -236,15 +309,16 @@ timer 60000 * 15 {
 //-------------------EVENTS-------------------↓
 
 event [msg, dm] (u, m: "^!h") => {
-  batch_print("Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!upd - последнее обновление.", "music");
+  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!say - C:\n⤷!upd - последнее обновление.");
 }
 
 event [msg, dm] (u, m: "^!upd") => {
-	a.print("v1.8\n⤷Возвращение музыки. Нашел парочку нормальных конверторов, но их создатели блочат использование на серверах. Снова Бельгия =)");
+	a.print("v1.9\n⤷Добавлена очередь в музыке и пропуск (пропускать может только тот, кто заказал).");
 }
 
 event [msg, me] (u, m: "!y") => {
 	if ytSwitch == true then {
+		ytText = "";
 		ytSwitch = false;
 		
 	  reY = new RegExp("!y\\s|\\s!y", "gi");
@@ -256,45 +330,63 @@ event [msg, me] (u, m: "!y") => {
 				    a.print(data, "", () => {
 							ytSwitch = true;
 						});
-				  else a.music(ytList[1][0], data, () => {
-						ytSwitch = true;
-					});
+				  else if !ytQueue.title.length then {
+						ytQueue.on.push(false);
+				    ytQueue.title.push(ytList[1][0]);
+				    ytQueue.time.push(((ytList[1][1].substring(0, 1) * 60) * 1000) + (ytList[1][1].substring(2) * 1000));
+				    ytQueue.name.push(u);
+				    ytQueue.link.push(data);
+						ytSwitch = true
+				  }
+					else if ytQueue.title.length < 6 then {
+						ytQueue.on.push(false);
+				    ytQueue.title.push(ytList[1][0]);
+				    ytQueue.time.push(((ytList[1][1].substring(0, 1) * 60) * 1000) + (ytList[1][1].substring(2) * 1000));
+				    ytQueue.name.push(u);
+				    ytQueue.link.push(data);
+						a.print(ytList[1][0] + " - добавлен в очередь");
+						ytSwitch = true
+					}
+					else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
 			  });
 		  });
     }
 	}
 }
 
-event [msg, me] (u, m) => {
-	if u == "Астролог" then {
-		if m.match(catcherZ) then {
-		  zodSwitch = true;
-			taroSwitch = true;
-		}
-		else if m.match(catcherT) then {
-			taroSwitch = true;
-			zodSwitch = true;
-		}
-	}
-	else console.log(u.cyan + ": ".yellow + m.yellow);
+event [msg, me] (u, m: "^!q") => {
+	ytQText = "";
+	batch_print((if ytQueue.title.length > 1 then { return "В очереди:" + queue(0); } else { return "В очереди ничего нет." }), "music");
 }
 
-event dm (u, m) => {
-	console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
+event [msg, me] (u, m: "^!next") => {
+	if u === ytQueue.name[0] then {
+		ytQueue.on.splice(0,1);
+		ytQueue.title.splice(0,1);
+		ytQueue.time.splice(0,1);
+		ytQueue.name.splice(0,1);
+		ytQueue.link.splice(0,1);
+	}
 }
 
 event [msg, me] (u, m: "^!list") => {
-	console.log(ytList);
   num = m.substring(6);
   if m.match("^!list$") then
-    batch_print("Пять песен по результатам последнего поиска:\n⤷1: " + ytList[1][0] + " - " + ytList[1][1] + "\n⤷2: " + ytList[2][0] + " - " + ytList[2][1] + "\n⤷3: " + ytList[3][0] + " - " + ytList[3][1] + "\n⤷4: " + ytList[4][0] + " - " + ytList[4][1] + "\n⤷5: " + ytList[5][0] + " - " + ytList[5][1] + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
+    batch_print("Пять песен по результатам последнего поиска:" + (if ytText.length > 0 then { return ytText } else { listText(0) }) + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
   else if (num < 1 || num > 5) then
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
     ytLink(ytList[m.substring(6)][2], data => {
 			if data.match("^Длина") then
 				  a.print(data);
-			else a.music(ytList[m.substring(6)][0], data);
+			else if ytQueue.title.length !== 6 then {
+				ytQueue.on.push(false);
+				ytQueue.title.push(ytList[m.substring(6)][0]);
+				ytQueue.time.push(((ytList[m.substring(6)][1].substring(0, 1) * 60) * 1000) + (ytList[m.substring(6)][1].substring(2) * 1000));
+				ytQueue.name.push(u);
+				ytQueue.link.push(data);
+			}
+			else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
     });
   }
 }
@@ -396,6 +488,10 @@ event msg (u, m: "^!taro") => {
   }
 }
 
+event dm (u, m: "^!say") => {
+	a.print(m.substring(5));
+}
+
 event dm (u, m: "^!отдай$") => {
 	a.getLoc(() => {
 		user = a.users.find(
@@ -406,6 +502,31 @@ event dm (u, m: "^!отдай$") => {
 	})
 }
 
+//logs
+
+event [msg, me] (u, m) => {
+	if u == "Астролог" then {
+		if m.match(catcherZ) then {
+		  zodSwitch = true;
+			taroSwitch = true;
+		}
+		else if m.match(catcherT) then {
+			taroSwitch = true;
+			zodSwitch = true;
+		}
+	}
+	else console.log(u.cyan + ": ".yellow + m.yellow);
+}
+
+event dm (u, m) => {
+	console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
+}
+
+event join (u) => console.log(underline.gray(u + " в чате."));
+event leave (u) => console.log(underline.gray(u + " покинул(а) чат."));
+
+//logs
+
 }
 
 
@@ -415,11 +536,17 @@ BotLogin = () => {
 
   if a.load() then {
 	  a.join(roomchik, () => {
-			if a.room.roomId == roomchik then {
-				console.log("bot loaded");
-				going beginBot;
-			}
-			else later 5000 BotLogin();
+			a.getLoc(() => {
+			  if a.room.roomId == roomchik then {
+				  console.log("bot loaded");
+				  if a.room.description !== "night | !h - инфа по командам | v1.9" then {
+					  a.descr("night | !h - инфа по командам | v1.9");
+					  going beginBot;
+				  }
+				  else going beginBot;
+			  }
+			  else later 5000 BotLogin();
+			})
 	  });
   }
   else { 
