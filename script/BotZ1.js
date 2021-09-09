@@ -175,6 +175,10 @@ ytLink = (id, call) => {
 			  call(data.file);
 			}
 			else call("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+		}).catch( err => {
+			ytSwitch = true;
+			console.log(err);
+			a.print("Запрос не прошел, повторите еще раз.");
 		})
 }
 
@@ -522,8 +526,8 @@ event dm (u, m) => {
 	console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
 }
 
-event join (u) => console.log(underline.gray(u + " в чате."));
-event leave (u) => console.log(underline.gray(u + " покинул(а) чат."));
+event join (u) => console.log("\" " + u.underline.gray + " \" в чате.".underline.gray);
+event leave (u) => console.log("\" " + u.underline.gray + " \" покинул(а) чат.".underline.gray);
 
 //logs
 
@@ -562,6 +566,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "2jNEBMDj3E";
+roomchik = "orJEgv01pC";
 
 BotLogin();
