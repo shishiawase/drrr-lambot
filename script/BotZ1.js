@@ -174,10 +174,19 @@ ytLink = (id, call) => {
 			if data.error !== true then {
 			  call(data.file);
 			}
-			else call("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+			else {
+				if data.error.match("duration") then {
+				  console.log(data.error);
+				  call("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+				}
+				else {
+					console.log(data.error);
+					call("Ошибка.");
+				}
+			}
 		}).catch( err => {
 			ytSwitch = true;
-			console.log(err);
+			console.log(err.response.status + " - " + err.response.statusText);
 			a.print("Запрос не прошел, повторите еще раз.");
 		})
 }
@@ -526,8 +535,8 @@ event dm (u, m) => {
 	console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
 }
 
-event join (u) => console.log("\" " + u.underline.gray + " \" в чате.".underline.gray);
-event leave (u) => console.log("\" " + u.underline.gray + " \" покинул(а) чат.".underline.gray);
+event join (u) => console.log("\" ".underline.gray + u.underline.gray + " \" в чате.".underline.gray);
+event leave (u) => console.log("\" ".underline.gray + u.underline.gray + " \" покинул(а) чат.".underline.gray);
 
 //logs
 
