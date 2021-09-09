@@ -167,28 +167,49 @@ listText = (num) => {
 
 ytLink = (id, call) => {
 	
-	axios("https://api.allorigins.win/raw?url=http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id)
-	  .then(resp => {
-			data = resp.data;
+	feetch("https://api.allorigins.win/raw?url=http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id)
+	  .then(response => response.json())
+		.then(resp => {
+			data = resp;
 			
 			if data.error !== true then {
-			  call(data.file);
+			  call(data);
 			}
-			else {
-				if data.error.match("duration") then {
-				  console.log(data.error);
-				  call("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
-				}
-				else {
-					console.log(data.error);
-					call("Ошибка.");
-				}
-			}
+			else call("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+			
 		}).catch( err => {
 			ytSwitch = true;
 			console.log(err.response.status + " - " + err.response.statusText);
 			a.print("Запрос не прошел, повторите еще раз.");
 		})
+}
+
+ythuyut = (data, u) => {
+	if data.message.match("^Длина") then
+		a.print(data, "", () => {
+			ytSwitch = true;
+		});
+	else if !ytQueue.title.length then {
+		ytQueue.on.push(false);
+		ytQueue.title.push(data.title);
+		ytQueue.time.push(data.duration * 1000);
+		ytQueue.name.push(u);
+		ytQueue.link.push(data.file);
+		ytSwitch = true
+	}
+	else if ytQueue.title.length < 6 then {
+		ytQueue.on.push(false);
+		ytQueue.title.push(data.title);
+		ytQueue.time.push(data.duration * 1000);
+		ytQueue.name.push(u);
+		ytQueue.link.push(data.file);
+		a.print(data.title + " - добавлен в очередь.");
+		ytSwitch = true
+	}
+	else {
+		a.print("Максимум 5 треков в очереди, текущие количество - !q.");
+		ytSwitch = true;
+	}
 }
 
 //-------------------YOUTUBE-------------------↑
@@ -334,33 +355,27 @@ event [msg, me] (u, m: "!y") => {
 		ytText = "";
 		ytSwitch = false;
 		
+		reLink = new RegExp("\\?v=|be/", "gi");
 	  reY = new RegExp("!y\\s|\\s!y", "gi");
-	  if m.match(reY) then {
+		if m.match(reLink) then {
+			mes = m.substring(m.search(reLink) + 3);
+			if mes.match(" ") then {
+				mes = mes.substring(0, mes.search(" "));
+				ytLink(mes, data => {
+				  ythuyut(data, u);
+			  });
+			}
+			else {
+				ytLink(mes, data => {
+				  ythuyut(data, u);
+			  });
+			}
+		}
+	  else if m.match(reY) then {
       ytSearch(m.replace(reY, ""), ylist =>  {
 			  ytList = ylist;
 			  ytLink(ytList[1][2], data => {
-				  if data.match("^Длина") then
-				    a.print(data, "", () => {
-							ytSwitch = true;
-						});
-				  else if !ytQueue.title.length then {
-						ytQueue.on.push(false);
-				    ytQueue.title.push(ytList[1][0]);
-				    ytQueue.time.push(((ytList[1][1].substring(0, 1) * 60) * 1000) + (ytList[1][1].substring(2) * 1000));
-				    ytQueue.name.push(u);
-				    ytQueue.link.push(data);
-						ytSwitch = true
-				  }
-					else if ytQueue.title.length < 6 then {
-						ytQueue.on.push(false);
-				    ytQueue.title.push(ytList[1][0]);
-				    ytQueue.time.push(((ytList[1][1].substring(0, 1) * 60) * 1000) + (ytList[1][1].substring(2) * 1000));
-				    ytQueue.name.push(u);
-				    ytQueue.link.push(data);
-						a.print(ytList[1][0] + " - добавлен в очередь");
-						ytSwitch = true
-					}
-					else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
+				  ythuyut(data, u);
 			  });
 		  });
     }
@@ -390,14 +405,17 @@ event [msg, me] (u, m: "^!list") => {
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
     ytLink(ytList[m.substring(6)][2], data => {
-			if data.match("^Длина") then
+			if data.message.match("^Длина") then
 				  a.print(data);
 			else if ytQueue.title.length !== 6 then {
 				ytQueue.on.push(false);
 				ytQueue.title.push(ytList[m.substring(6)][0]);
 				ytQueue.time.push(((ytList[m.substring(6)][1].substring(0, 1) * 60) * 1000) + (ytList[m.substring(6)][1].substring(2) * 1000));
 				ytQueue.name.push(u);
-				ytQueue.link.push(data);
+				ytQueue.link.push(data.file);
+				
+				if ytQueue.title.length then
+				  a.print(data.title + " - добавлен в очередь.");
 			}
 			else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
     });
@@ -575,6 +593,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "2jNEBMDj3E";
+roomchik = "kvSJU64EY1";
 
 BotLogin();
