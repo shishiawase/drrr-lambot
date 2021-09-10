@@ -379,6 +379,7 @@ event [msg, me] (u, m: "!y") => {
 			  });
 		  });
     }
+		else ytSwitch = true;
 	}
 }
 
