@@ -1,5 +1,4 @@
-const jsdom = require('./node_modules/jsdom')
-const got = require('./node_modules/got')
+const {Telegraf} = require('./node_modules/telegraf')
 const Catbox = require('./node_modules/catbox.moe')
 const axios = require('./node_modules/axios')
 const colors = require('./node_modules/colors')
@@ -9,8 +8,7 @@ const repl = require('repl')
 const LS = require('./LambdaScript')
 const {Bot, listen} = require('./bot')
 
-global.jsdom = jsdom
-global.got = got
+global.Telegraf = Telegraf
 global.fs = fs
 global.Catbox = Catbox
 global.axios = axios

@@ -1,5 +1,6 @@
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
+tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
 
 //-------------------ZODIAC-------------------↓
 
@@ -65,9 +66,13 @@ upZod = () => {
   }
 }
 
-if lucky.length < 1 then {
-  upZod();
+if !JSON.parse(fs.readFileSync("./saves/zod.json", "utf8")) then {
+	upZod();
+  later 2000 fs.writeFile("./saves/zod.json", JSON.stringify(lucky), () => {
+		console.log("Зодиак записан.");
+	});
 }
+else lucky = JSON.parse(fs.readFileSync("./saves/zod.json", "utf8"));
 
 //-------------------ZODIAC-------------------↑
 
@@ -131,7 +136,6 @@ tarFunc = (name) => {
 //-------------------TARO-------------------↑
 
 //-------------------YOUTUBE-------------------↓
-ytSwitch = true;
 ytList = {};
 ytText = "";
 ytQText = "";
@@ -173,44 +177,40 @@ ytLink = (id, call) => {
 			call(resp);
 			
 		}).catch( err => {
-			ytSwitch = true;
 			console.log(err.response.status + " - " + err.response.statusText);
 			a.print("Запрос не прошел, повторите еще раз.");
-			call(err);
+			call("no");
 		})
 }
 
 ythuyut = (resp, u) => {
-	if resp.response.status == 504 then
-	  ytSwitch = true;
-	else if resp.data.error == true then
-		a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.", "", () => {
-			ytSwitch = true;
-		});
-	else if !ytQueue.title.length then {
-		ytQueue.on.push(false);
-		ytQueue.title.push(resp.data.title);
-		ytQueue.time.push(resp.data.duration * 1000);
-		ytQueue.name.push(u);
-		ytQueue.link.push(resp.data.file);
-		ytSwitch = true
-	}
-	else if ytQueue.title.length < 6 then {
-		ytQueue.on.push(false);
-		ytQueue.title.push(resp.data.title);
-		ytQueue.time.push(resp.data.duration * 1000);
-		ytQueue.name.push(u);
-		ytQueue.link.push(resp.data.file);
-		a.print(resp.data.title + " - добавлен в очередь.");
-		ytSwitch = true
-	}
-	else {
-		a.print("Максимум 5 треков в очереди, текущие количество - !q.");
-		ytSwitch = true;
+	if resp !== "no" then {
+	  if resp.data.error == true then
+		  a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+	  else if !ytQueue.title.length then {
+		  ytQueue.on.push(false);
+		  ytQueue.title.push(resp.data.title);
+		  ytQueue.time.push(resp.data.duration * 1000);
+		  ytQueue.name.push(u);
+		  ytQueue.link.push(resp.data.file);
+	  }
+	  else if ytQueue.title.length < 6 then {
+		  ytQueue.on.push(false);
+		  ytQueue.title.push(resp.data.title);
+		  ytQueue.time.push(resp.data.duration * 1000);
+		  ytQueue.name.push(u);
+		  ytQueue.link.push(resp.data.file);
+		  a.print(resp.data.title + " - добавлен в очередь.");
+	  }
+	  else {
+		  a.print("Максимум 5 треков в очереди, текущие количество - !q.");
+	  }
 	}
 }
 
 //-------------------YOUTUBE-------------------↑
+
+
 
 //-------------------LONGMSG-------------------↓
 
@@ -334,11 +334,72 @@ timer 60000 * 15 {
 		  a.dm(a.profile.name, ".");
 		else going restartBot;
 	});
+	
+	fs.writeFile("./saves/zod.json", JSON.stringify(lucky) => {
+		console.log("Перезапись ЗЗ");
+	});
 }
 
 //-------------------TIMERS-------------------↑
 
 //-------------------EVENTS-------------------↓
+
+//-------------------TELEGRAM-------------------↓
+const tgBot = new Telegraf(tg.botTok);
+tgBot.start(ctx => ctx.reply("Добро пожаловать c:"));
+tgBot.command("dm", ctx => {
+	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+	mTgText = ctx.message.text.substring(ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
+	mTgName = ctx.message.text.substring(ctx.message.text.indexOf(" ") + 1, ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
+	mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
+	if JSON.stringify(ctx.message.chat.id).match(regID)
+	  then {
+	    a.dm(mTgName, mTgText.replace(mTgLink, ""), (if mTgLink.match("http|https") then mTgLink else ""))
+		}
+});
+tgBot.command("kick", ctx => {
+	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+	mTg = ctx.message.text.replace("/kick ", "");
+	if JSON.stringify(ctx.message.chat.id).match(regID)
+	  then {
+      a.kick(mTg);
+			tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет нах."));
+		}
+});
+tgBot.command("ban", ctx => {
+	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+	mTg = ctx.message.text.replace("/ban ", "");
+	if JSON.stringify(ctx.message.chat.id).match(regID)
+	  then {
+	    a.ban(mTg);
+			tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет в далекую писдень."));
+		}
+});
+tgBot.command("unban", ctx => {
+	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+	mTg = ctx.message.text.replace("/unban ", "");
+	if JSON.stringify(ctx.message.chat.id).match(regID)
+	  then {
+	    a.unban(mTg);
+			tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " оправдан."));
+		}
+});
+tgBot.on("text", ctx => {
+	mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
+	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+	regKao = new RegExp("[Кк]аору", "gi");
+	mTg = ctx.message.text;
+	if JSON.stringify(ctx.message.chat.id).match(regID)
+	  then {
+			console.log(mTg.replace(mTgLink, ""));
+			console.log(mTg);
+			a.print((if !mTg.replace(mTgLink, "") then mTg else mTg.replace(mTgLink, "")), (if mTgLink.match("http|https") then mTgLink else ""));
+		}
+});
+tgBot.on("text", ctx => if JSON.parse(ctx.message.text).match("[Кк]аору") then ctx.reply("Кроль..~ <3"));
+tgBot.launch();
+
+//-------------------TELEGRAM-------------------↑
 
 event [msg, dm] (u, m: "^!h") => {
   batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!say - C:\n⤷!upd - последнее обновление.");
@@ -349,9 +410,7 @@ event [msg, dm] (u, m: "^!upd") => {
 }
 
 event [msg, me] (u, m: "!y") => {
-	if ytSwitch == true then {
 		ytText = "";
-		ytSwitch = false;
 		
 		reLink = new RegExp("\\?v=|be/", "gi");
 	  reY = new RegExp("!y\\s|\\s!y", "gi");
@@ -377,8 +436,6 @@ event [msg, me] (u, m: "!y") => {
 			  });
 		  });
     }
-		else ytSwitch = true;
-	}
 }
 
 event [msg, me] (u, m: "^!q") => {
@@ -403,22 +460,22 @@ event [msg, me] (u, m: "^!list") => {
   else if (num < 1 || num > 5) then
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
-    ytLink(ytList[m.substring(6)][2], data => {
-			if resp.response.status == 504 then
-			  ytSwitch = true;
-			else if resp.data.error == true then
-		    a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
-			else if ytQueue.title.length !== 6 then {
-				ytQueue.on.push(false);
-				ytQueue.title.push(ytList[m.substring(6)][0]);
-				ytQueue.time.push(((ytList[m.substring(6)][1].substring(0, 1) * 60) * 1000) + (ytList[m.substring(6)][1].substring(2) * 1000));
-				ytQueue.name.push(u);
-				ytQueue.link.push(resp.data.file);
+    ytLink(ytList[m.substring(6)][2], resp => {
+			if resp !== "no" then {
+			  if resp.data.error == true then
+		      a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+			  else if ytQueue.title.length !== 6 then {
+				  ytQueue.on.push(false);
+				  ytQueue.title.push(ytList[m.substring(6)][0]);
+				  ytQueue.time.push(((ytList[m.substring(6)][1].substring(0, 1) * 60) * 1000) + (ytList[m.substring(6)][1].substring(2) * 1000));
+				  ytQueue.name.push(u);
+				  ytQueue.link.push(resp.data.file);
 				
-				if ytQueue.title.length then
-				  a.print(resp.data.title + " - добавлен в очередь.");
+				  if ytQueue.title.length then
+				    a.print(resp.data.title + " - добавлен в очередь.");
+			  }
+			  else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
 			}
-			else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
     });
   }
 }
@@ -537,47 +594,53 @@ event dm (u, m: "^!отдай$") => {
 
 //-------------------LOGS-------------------↓
 
-tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
-
-urlfmt = (fix, e) => fix + e.user + fix + ": " + e.text + (if e.url.length > 1 then " [URL](" + e.url + ")" else "");
-
 log2mkd = (type, e) => {
-  if(type === "msg")
-    then urlfmt("*", e)
-  else if(type === "me")
-    then urlfmt("_", e)
-  else if(type === "dm")
-    then urlfmt("#", e)
-  else if(type === "join")
-    then e.user + " в чате."
-  else if(type === "leave")
-    then e.user + " покинул(а) чат."
-  else if(type === "kick")
-    then e.user + " был кикнут из комнаты."
-	else if(type === "ban")
-		then e.user + " был забанен."
+	if e.user !== a.profile.name
+	  then {
+      if(type === "msg")
+        then "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
+      else if(type === "me")
+        then "Действие | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: _") else ": _") + e.text + "_" + (if e.url then " [URL](" + e.url + ")" else "");
+      else if(type === "dm")
+        then "ЛС | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
+      else if(type === "join")
+        then e.user + (if e.trip then ("`#" + e.trip + "` в чате.") else " в чате.");
+      else if(type === "leave")
+        then e.user + (if e.trip then ("`#" + e.trip + "` покинул\\(а\\) чат.") else " покинул\\(а\\) чат\\.");
+		}
 }
 
-sendTg = (token, chat_id, type, e) => axios({
-	  "method": "POST",
-		"url": "https://api.telegram.org/bot" + token + "/sendMessage",
-		"headers": {
-			"dataType": "json",
-		},
-		"data": {
-      "chat_id": chat_id,
-      "text": log2mkd(type, e),
-			"parse_mode": "Markdown",
-      "disable_web_page_preview": false,
-		}
-}).catch(err => {
-	console.log("failed:", err);
-});
+sendTg = (token, chat_id, type, e) => {
+	chat_id.forEach(chat_ID => {
+		axios({
+	    "method": "POST",
+		  "url": "https://api.telegram.org/bot" + token + "/sendMessage",
+		  "headers": {
+			  "dataType": "json",
+		  },
+		  "data": {
+        "chat_id": chat_ID,
+        "text": log2mkd(type, e),
+			  "parse_mode": "Markdown",
+        "disable_web_page_preview": false,
+		  }
+	  }).catch(err => {
+	    console.log("failed:", err.response.data);
+    });
+  })
+}
 	
-event [msg, dm, me, join, leave, kick, ban] (u, m, url, trip, eventObject) => {
-	sendTg(tg.botTok, tg.chatTok, eventObject.type, eventObject);
-	
-	if u == "Астролог" then {
+event [msg, dm, me, join, leave] (u, m, url, trip, eventObject) => {
+	if u !== "Астролог" then {
+		sendTg(tg.botTok, tg.chatTok, eventObject.type, eventObject);
+		
+		if eventObject.type === "msg" then console.log(u.cyan + ": ".yellow + m.yellow);
+	  else if eventObject.type === "dm" then console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
+	  else if eventObject.type === "me" then console.log("Действие(".yellow + u.cyan + "): ".yellow + m.yellow);
+	  else if eventObject.type === "join" then console.log("\" ".underline.gray + u.underline.gray + " \" в чате.".underline.gray);
+	  else if eventObject.type === "leave" then console.log("\" ".underline.gray + u.underline.gray + " \" покинул(а) чат.".underline.gray);
+	}
+	else {
 		if m.match(catcherZ) then {
 		  zodSwitch = true;
 			taroSwitch = true;
@@ -587,11 +650,6 @@ event [msg, dm, me, join, leave, kick, ban] (u, m, url, trip, eventObject) => {
 			zodSwitch = true;
 		}
 	}
-	else if eventObject.type === "msg" then console.log(u.cyan + ": ".yellow + m.yellow);
-	else if eventObject.type === "dm" then console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
-	else if eventObject.type === "me" then console.log("Действие(".yellow + u.cyan + "): ".yellow + m.yellow);
-	else if eventObject.type === "join" then console.log("\" ".underline.gray + u.underline.gray + " \" в чате.".underline.gray);
-	else if eventObject.type === "leave" then console.log("\" ".underline.gray + u.underline.gray + " \" покинул(а) чат.".underline.gray);
 }
 //-------------------LOGS-------------------↑
 
