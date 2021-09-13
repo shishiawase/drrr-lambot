@@ -408,7 +408,7 @@ tgBot.on("sticker", ctx => {
 		  linkTgStick = x.href;
 		  cat.upload(linkTgStick).then(catLink => {
 		    stickers(catLink, stickLink => {
-			    if url !== "Error" then {
+			    if stickLink !== "Error" then {
 			      a.print("Sticker:", stickLink, () => {
 		          console.log("stick send");
 		          ctx.reply("Стикер отправлен.");
