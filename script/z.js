@@ -73,51 +73,6 @@ globalThis.ytSearch = (na, call) => {
     })
 }
 
-/*globalThis.ytDownload = (ytID, rKey, call) => {
-	var options = {
-        method: 'GET',
-        url: 'https://youtube-mp36.p.rapidapi.com/dl',
-        params: {id: ytID},
-        headers: {
-            'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com',
-            'x-rapidapi-key': rKey 
-        }
-    };
-
-    axios.request(options).then(function (response) {
-			console.log(response.data.link);
-	    call(response.data);
-    }).catch(function (error) {
-	    console.error(error);
-    });
-}*/
-
-/*globalThis.ytDownload = (id, call) => {
-    let scrape = async() => {
-
-        const browser = await puppeteer.launch({
-            headless: true
-        });
-        const page = await browser.newPage();
-        await page.goto('https://www.yt-download.org/api/button/mp3/' + id, {
-					  waitUntil: 'networkidle0',
-				});
-
-        const result = await page.evaluate(() => {
-            
-						let data = document.querySelector("body > div > div > div > div > a:nth-child(1)").href;
-
-            return data;
-        })
-
-        await browser.close();
-        return result;
-				
-    }
-
-    scrape().then(x => call(x)).catch(console.log);
-};*/
-
 /*globalThis.ytDownload = (id, call) => {
 url = 'https://www.yt-download.org/file/mp3/' + id;
     got(url, {
@@ -146,6 +101,38 @@ url = 'https://www.yt-download.org/file/mp3/' + id;
         call(link);
     })
 }*/ //работает, но не везде//
+
+globalThis.stickers = (link, call) => {
+    let scrape = async() => {
+
+        const browser = await puppeteer.launch({
+            headless: true
+        });
+        const page = await browser.newPage();
+        await page.goto('https://api.allorigins.win/raw?url=https://ezgif.com/webp-to-jpg?url=' + link);
+        await page.waitForSelector('#percentage');
+        await page.type('#percentage', '100');
+        await page.click('#tool-submit-button > input');
+        await page.waitForSelector('#output > p.outfile > img');
+				await page.click('#output > table > tbody > tr:nth-child(1) > td:nth-child(2) > a');
+				await page.waitForSelector('#width');
+				await page.type('#width', '200');
+				await page.click('#tool-submit-button > input');
+				await page.waitForSelector('#output > p.outfile > img');
+				
+        const result = await page.evaluate(() => {
+            let data = document.querySelector("#output > p.outfile > img").src
+
+            return data;
+        })
+				
+				await browser.close();
+        return result;
+				
+    }
+
+    scrape().then(x => call(x)).catch(x => call("Error"));
+}
 
 globalThis.taro = (call) => {
     let scrape = async() => {

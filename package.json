@@ -10,6 +10,7 @@
     "puppeteer": "^10.2.0",
     "socks-proxy-agent": "^6.0.0",
     "telegraf": "^4.4.1",
+    "tinyurl": "^1.1.7",
     "youtube-search-api": "^1.0.10"
   }
 }

@@ -1,7 +1,13 @@
+cat = new Catbox.Catbox("");
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
+pred = {};
 
+if !JSON.parse(fs.readFileSync("./saves/p.json", "utf8")) then {
+	pred = {};
+}
+else pred = JSON.parse(fs.readFileSync("./saves/p.json", "utf8"));
 //-------------------ZODIAC-------------------↓
 
 zodSwitch = true;
@@ -308,6 +314,9 @@ timer 60000 * 60 {
   if time("getHours") == 21 then {
     upZod();
     names = [];
+		fs.writeFile("./saves/zod.json", JSON.stringify(lucky), () => {
+		  console.log("Перезапись ЗЗ");
+	  });
   }
 }
 
@@ -334,10 +343,6 @@ timer 60000 * 15 {
 		  a.dm(a.profile.name, ".");
 		else going restartBot;
 	});
-	
-	fs.writeFile("./saves/zod.json", JSON.stringify(lucky) => {
-		console.log("Перезапись ЗЗ");
-	});
 }
 
 //-------------------TIMERS-------------------↑
@@ -346,9 +351,10 @@ timer 60000 * 15 {
 
 //-------------------TELEGRAM-------------------↓
 const tgBot = new Telegraf(tg.botTok);
+regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+
 tgBot.start(ctx => ctx.reply("Добро пожаловать c:"));
 tgBot.command("dm", ctx => {
-	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
 	mTgText = ctx.message.text.substring(ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
 	mTgName = ctx.message.text.substring(ctx.message.text.indexOf(" ") + 1, ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
 	mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
@@ -358,7 +364,6 @@ tgBot.command("dm", ctx => {
 		}
 });
 tgBot.command("kick", ctx => {
-	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
 	mTg = ctx.message.text.replace("/kick ", "");
 	if JSON.stringify(ctx.message.chat.id).match(regID)
 	  then {
@@ -367,7 +372,6 @@ tgBot.command("kick", ctx => {
 		}
 });
 tgBot.command("ban", ctx => {
-	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
 	mTg = ctx.message.text.replace("/ban ", "");
 	if JSON.stringify(ctx.message.chat.id).match(regID)
 	  then {
@@ -376,7 +380,6 @@ tgBot.command("ban", ctx => {
 		}
 });
 tgBot.command("unban", ctx => {
-	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
 	mTg = ctx.message.text.replace("/unban ", "");
 	if JSON.stringify(ctx.message.chat.id).match(regID)
 	  then {
@@ -386,27 +389,64 @@ tgBot.command("unban", ctx => {
 });
 tgBot.on("text", ctx => {
 	mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
-	regID = new RegExp("" + tg.chatTok.join("|"), "gi");
-	regKao = new RegExp("[Кк]аору", "gi");
 	mTg = ctx.message.text;
 	if JSON.stringify(ctx.message.chat.id).match(regID)
 	  then {
-			console.log(mTg.replace(mTgLink, ""));
-			console.log(mTg);
+			rep = {};
+			rep[tg.chatTok[0]] = "Каору:\n⤷";
+			rep[tg.chatTok[1]] = "Кроль:\n⤷";
+			
+			ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)] + " " + mTg + (if mTgLink.match("http|https") then " [URL](" + mTgLink + ")" else ""));
 			a.print((if !mTg.replace(mTgLink, "") then mTg else mTg.replace(mTgLink, "")), (if mTgLink.match("http|https") then mTgLink else ""));
 		}
 });
-tgBot.on("text", ctx => if JSON.parse(ctx.message.text).match("[Кк]аору") then ctx.reply("Кроль..~ <3"));
+tgBot.on("sticker", ctx => {
+	if JSON.stringify(ctx.message.chat.id).match(regID) then {
+	  ctx.reply("Отправка...");
+	  file_id = ctx.message.sticker.file_id;
+	  ctx.telegram.getFileLink(file_id).then(x => {
+		  linkTgStick = x.href;
+		  cat.upload(linkTgStick).then(catLink => {
+		    stickers(catLink, stickLink => {
+			    if url !== "Error" then {
+			      a.print("Sticker:", stickLink, () => {
+		          console.log("stick send");
+		          ctx.reply("Стикер отправлен.");
+		        });
+			    }
+			    else ctx.reply("Ошибка отправки.");
+		    });
+		  });
+	  })
+	}
+});
 tgBot.launch();
 
 //-------------------TELEGRAM-------------------↑
 
 event [msg, dm] (u, m: "^!h") => {
-  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!say - C:\n⤷!upd - последнее обновление.");
+  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!find (прикрепите картинку через кнопочку) - поиск аниме по кадру, скриншоту.\n⤷!say - C:\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
 }
 
 event [msg, dm] (u, m: "^!upd") => {
-	a.print("v1.9\n⤷Добавлена очередь в музыке и пропуск (пропускать может только тот, кто заказал).");
+	a.print("v2.0\n⤷Добавлен поисковик момента и серии по кадру из аниме. Будут подозритетельные ссылки, ага С: Ну и предложка еще.");
+}
+
+event [dm] (u, m: "^!p") => {
+	if Object.keys(pred).includes(u) then {
+	  pred[u].push(m.substring(3));
+		fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
+		  console.log("+1 предложение.".green);
+			a.dm(u, "Ваше сообщение сохранено.");
+	  });
+	}
+	else {
+		pred[u] = [m.substring(3)];
+		fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
+		  console.log("+1 предложение.".green);
+			a.dm(u, "+1 к вашим сообщениям.");
+	  });
+	}
 }
 
 event [msg, me] (u, m: "!y") => {
@@ -478,6 +518,25 @@ event [msg, me] (u, m: "^!list") => {
 			}
     });
   }
+}
+
+event msg (u, m: "^!find", urlTrace) => {
+	timeA = s => (new Date(s * 1000)).toISOString().substr(11, 8);
+
+  urlTrace = "https://api.trace.moe/search?url=" + encodeURIComponent(urlTrace);
+  ep = if res.episode then " ep." + res.episode else "";
+  feetch(urlTrace)
+    .then(resp => resp.json())
+    .then(res => {
+			console.log(res);
+      res = res.result[0];
+      tiny.shorten(res.image, url => a.print(
+        res.filename + ep + "\n" +
+        "Схожесть и кадр: " + String(res.similarity.toFixed(2)), url))
+      tiny.shorten(res.video, url => a.print(
+        res.filename + ep + "\n" + "Отрывок: " +
+        timeA(res.from) + " ~ " + timeA(res.to) + "\n", url))
+    })
 }
 
 event msg (u, m: "^!zod") => {
@@ -595,22 +654,30 @@ event dm (u, m: "^!отдай$") => {
 //-------------------LOGS-------------------↓
 
 log2mkd = (type, e) => {
-	if e.user !== a.profile.name
-	  then {
-      if(type === "msg")
-        then "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
-      else if(type === "me")
-        then "Действие | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: _") else ": _") + e.text + "_" + (if e.url then " [URL](" + e.url + ")" else "");
-      else if(type === "dm")
-        then "ЛС | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
-      else if(type === "join")
-        then e.user + (if e.trip then ("`#" + e.trip + "` в чате.") else " в чате.");
-      else if(type === "leave")
-        then e.user + (if e.trip then ("`#" + e.trip + "` покинул\\(а\\) чат.") else " покинул\\(а\\) чат\\.");
-		}
+	chars = {
+		"_": "\\_",
+		"*": "\\*",
+		"[": "\\[",
+		"`": "\\`"
+	}
+	reChar = new RegExp("_|\\*|\\[|`", "gi");
+	e.user = e.user.replace(reChar, m => chars[m]);
+	e.text = e.text.replace(reChar, m => chars[m]);
+	
+  if(type === "msg")
+    then "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
+  else if(type === "me")
+    then "Действие | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: _") else ": _") + e.text + "_" + (if e.url then " [URL](" + e.url + ")" else "");
+  else if(type === "dm")
+    then "ЛС | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
+  else if(type === "join")
+    then e.user + (if e.trip then ("`#" + e.trip + "` в чате.") else " в чате.");
+  else if(type === "leave")
+    then e.user + (if e.trip then ("`#" + e.trip + "` покинул(а) чат.") else " покинул(а) чат.");
 }
 
 sendTg = (token, chat_id, type, e) => {
+	
 	chat_id.forEach(chat_ID => {
 		axios({
 	    "method": "POST",
@@ -631,7 +698,7 @@ sendTg = (token, chat_id, type, e) => {
 }
 	
 event [msg, dm, me, join, leave] (u, m, url, trip, eventObject) => {
-	if u !== "Астролог" then {
+	if u !== a.profile.name then {
 		sendTg(tg.botTok, tg.chatTok, eventObject.type, eventObject);
 		
 		if eventObject.type === "msg" then console.log(u.cyan + ": ".yellow + m.yellow);
@@ -665,8 +732,8 @@ BotLogin = () => {
 			a.getLoc(() => {
 			  if a.room.roomId == roomchik then {
 				  console.log("bot loaded");
-				  if a.room.description !== "night | !h - инфа по командам | v1.9" then {
-					  a.descr("night | !h - инфа по командам | v1.9");
+				  if a.room.description !== "night | !h - инфа по командам | v2.0" then {
+					  a.descr("night | !h - инфа по командам | v2.0");
 					  going beginBot;
 				  }
 				  else going beginBot;
