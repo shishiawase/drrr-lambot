@@ -1,11 +1,10 @@
-const { SocksProxyAgent } = require('socks-proxy-agent');
+const https = require('https');
+const sharp = require('sharp');
 const got = require('got');
 const puppeteer = require('puppeteer');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const youtubesearchapi = require('youtube-search-api');
-
-const agent = new SocksProxyAgent('socks5://127.0.0.1:9050');
 
 globalThis.zodiac = (type, call) => {
     url = 'https://horo.mail.ru/prediction/' + type + '/today/';
@@ -102,36 +101,19 @@ url = 'https://www.yt-download.org/file/mp3/' + id;
     })
 }*/ //работает, но не везде//
 
-globalThis.stickers = (link, call) => {
-    let scrape = async() => {
-
-        const browser = await puppeteer.launch({
-            headless: true
-        });
-        const page = await browser.newPage();
-        await page.goto('https://api.allorigins.win/raw?url=https://ezgif.com/webp-to-jpg?url=' + link);
-        await page.waitForSelector('#percentage');
-        await page.type('#percentage', '100');
-        await page.click('#tool-submit-button > input');
-        await page.waitForSelector('#output > p.outfile > img');
-				await page.click('#output > table > tbody > tr:nth-child(1) > td:nth-child(2) > a');
-				await page.waitForSelector('#width');
-				await page.type('#width', '200');
-				await page.click('#tool-submit-button > input');
-				await page.waitForSelector('#output > p.outfile > img');
-				
-        const result = await page.evaluate(() => {
-            let data = document.querySelector("#output > p.outfile > img").src
-
-            return data;
-        })
-				
-				await browser.close();
-        return result;
-				
-    }
-
-    scrape().then(x => call(x)).catch(x => call("Error"));
+globalThis.StickCon = (url, call) => {
+	
+	let file = fs.createWriteStream('file.webp');
+  let request = https.get(url, (response) => {
+    response.pipe(file);
+		sharp('file.webp')
+		  .resize({ width: 200 })
+			.toFile('file.png', () => {
+				sharp.cache(false);
+				cat.upload('file.png').then(url => call(url)).catch(err => call("error"));
+			});
+	});
+	
 }
 
 globalThis.taro = (call) => {

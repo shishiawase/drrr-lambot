@@ -401,24 +401,27 @@ tgBot.on("text", ctx => {
 		}
 });
 tgBot.on("sticker", ctx => {
-	if JSON.stringify(ctx.message.chat.id).match(regID) then {
-	  ctx.reply("Отправка...");
-	  file_id = ctx.message.sticker.file_id;
-	  ctx.telegram.getFileLink(file_id).then(x => {
-		  linkTgStick = x.href;
-		  cat.upload(linkTgStick).then(catLink => {
-		    stickers(catLink, stickLink => {
-			    if stickLink !== "Error" then {
-			      a.print("Sticker:", stickLink, () => {
-		          console.log("stick send");
-		          ctx.reply("Стикер отправлен.");
-		        });
-			    }
-			    else ctx.reply("Ошибка отправки.");
-		    });
-		  });
-	  })
-	}
+	if JSON.stringify(ctx.message.chat.id).match(regID)
+	  then {
+			rep = {};
+			rep[tg.chatTok[0]] = "Каору:";
+			rep[tg.chatTok[1]] = "Кроль:";
+			
+	    ctx.reply("Отправка...");
+	    file_id = ctx.message.sticker.file_id;
+	    ctx.telegram.getFileLink(file_id).then(x => {
+	      StickCon(x.href, link => {
+					if link !== "error" then {
+			      a.print("Стикер:", link, () => {
+			        ctx.reply("Стикер отправлен.");
+					    ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)]);
+			        ctx.telegram.sendSticker((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), file_id);
+			      });
+					}
+					else ctx.reply("Ощибка отправки.");
+		    })
+	    });
+		}
 });
 tgBot.launch();
 
