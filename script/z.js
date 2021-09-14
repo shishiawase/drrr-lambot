@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const youtubesearchapi = require('youtube-search-api');
+cat = new Catbox.Catbox("");
 
 globalThis.zodiac = (type, call) => {
     url = 'https://horo.mail.ru/prediction/' + type + '/today/';
