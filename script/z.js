@@ -107,12 +107,12 @@ globalThis.StickCon = (url, call) => {
 	let file = fs.createWriteStream('file.webp');
   let request = https.get(url, (response) => {
     response.pipe(file);
-		sharp('file.webp')
+		setTimeout(() => sharp('file.webp')
 		  .resize({ width: 200 })
 			.toFile('file.png', () => {
 				sharp.cache(false);
 				cat.upload('file.png').then(url => call(url)).catch(err => call("error"));
-			});
+			}), 1000);
 	});
 	
 }

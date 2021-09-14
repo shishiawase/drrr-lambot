@@ -1,4 +1,3 @@
-cat = new Catbox.Catbox("");
 catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
