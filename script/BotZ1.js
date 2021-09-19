@@ -176,9 +176,17 @@ listText = (num) => {
 
 ytLink = (id, call) => {
 	
-	axios("https://api.allorigins.win/raw?url=http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id)
+	axios("https://convertdrrr.herokuapp.com/conv.php?youtubelink=https://www.youtube.com/watch?v=" + id)
 	  .then(resp => {
 			
+			later 60000*10 {
+				axios("https://convertdrrr.herokuapp.com/conv.php?delete=" + id)
+				  .then(res => {
+						if res.data.error === false then {
+							console.log("Delete mp3 file from Heroku - ok".green);
+						}
+					}).catch( error => console.log(error.response.status + " - " + error.response.statusText));
+			}
 			call(resp);
 			
 		}).catch( err => {
@@ -191,7 +199,7 @@ ytLink = (id, call) => {
 ythuyut = (resp, u) => {
 	if resp !== "no" then {
 	  if resp.data.error == true then
-		  a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+		  a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
 	  else if !ytQueue.title.length then {
 		  ytQueue.on.push(false);
 		  ytQueue.title.push(resp.data.title);
@@ -208,7 +216,7 @@ ythuyut = (resp, u) => {
 		  a.print(resp.data.title + " - добавлен в очередь.");
 	  }
 	  else {
-		  a.print("Максимум 5 треков в очереди, текущие количество - !q.");
+		  a.print("Максимум 5 треков в очереди, текущее количество - !q.");
 	  }
 	}
 }
@@ -417,7 +425,7 @@ tgBot.on("sticker", ctx => {
 			        ctx.telegram.sendSticker((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), file_id);
 			      });
 					}
-					else ctx.reply("Ощибка отправки.");
+					else ctx.reply("Ошибка отправки.");
 		    })
 	    });
 		}
@@ -431,11 +439,11 @@ event [msg, dm] (u, m: "^!h") => {
 }
 
 event [msg, dm] (u, m: "^!upd") => {
-	a.print("v2.0\n⤷Добавлен поисковик момента и серии по кадру из аниме. Будут подозритетельные ссылки, ага С: Ну и предложка еще.");
+	a.print("v2.1\n⤷Свой конвертер, можно ставить треки до 10 минут. То много хороших песенок, которые идут 5+ минут. с: (пока на тест)");
 }
 
 event [dm] (u, m: "^!p") => {
-	if Object.keys(pred).includes(u) then {
+	if !Object.keys(pred).includes(u) then {
 	  pred[u].push(m.substring(3));
 		fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
 		  console.log("+1 предложение.".green);
@@ -734,8 +742,8 @@ BotLogin = () => {
 			a.getLoc(() => {
 			  if a.room.roomId == roomchik then {
 				  console.log("bot loaded");
-				  if a.room.description !== "night | !h - инфа по командам | v2.0" then {
-					  a.descr("night | !h - инфа по командам | v2.0");
+				  if a.room.description !== "night | !h - инфа по командам | v2.1" then {
+					  a.descr("night | !h - инфа по командам | v2.1");
 					  going beginBot;
 				  }
 				  else going beginBot;
