@@ -35,6 +35,37 @@ globalThis.zodiac = (type, call) => {
     })
 }
 
+/*globalThis.zodSmile = (type, call) => {
+	  url = 'http://stoboi.ru/gorodaily/horoscope.php?id=' + type;
+    got(url)
+    .then(resp => {
+        let textNodes = [];
+        let alltext = '';
+        const dom = new JSDOM(resp.body);
+        body = dom.window.document.querySelector('body');
+
+        function recursy(element) {
+            element.childNodes.forEach(node => {
+
+                if (node.nodeName.match(/^P$/)) {
+									console.log(node.innerText);
+									console.log(node.outerText);
+									console.log(node.innerHTML);
+                    const obj = node.innerText;
+                    textNodes.push(obj);
+                } else {
+                    recursy(node);
+                }
+            });
+        }
+
+        recursy(body);
+
+        alltext = textNodes[2] + ' ' + textNodes[3] + ' ' + textNodes[4];
+        call(alltext);
+    })
+}*/
+
 globalThis.ytSearch = (na, call) => {
     youtubesearchapi.GetListByKeyword(na, false).then(x => {
 			  let yt = {};

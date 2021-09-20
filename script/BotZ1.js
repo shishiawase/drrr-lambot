@@ -145,15 +145,15 @@ ytList = {};
 ytText = "";
 ytQText = "";
 ytQueue = {
-	"on": [],
 	"title": [],
 	"time": [],
 	"name": [],
-	"link": []
+	"link": [],
+	"id": [],
+	"type": 0,
 };
 
 queue = (num) => {
-	console.log(ytQueue.title.length);
 	if ytQueue.title.length >= 2 then {
 		
 		if num < (ytQueue.title.length - 1) then {
@@ -179,14 +179,6 @@ ytLink = (id, call) => {
 	axios("https://convertdrrr.herokuapp.com/conv.php?youtubelink=https://www.youtube.com/watch?v=" + id)
 	  .then(resp => {
 			
-			later 60000*10 {
-				axios("https://convertdrrr.herokuapp.com/conv.php?delete=" + id)
-				  .then(res => {
-						if res.data.error === false then {
-							console.log("Delete mp3 file from Heroku - ok".green);
-						}
-					}).catch( error => console.log(error.response.status + " - " + error.response.statusText));
-			}
 			call(resp);
 			
 		}).catch( err => {
@@ -201,23 +193,58 @@ ythuyut = (resp, u) => {
 	  if resp.data.error == true then
 		  a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
 	  else if !ytQueue.title.length then {
-		  ytQueue.on.push(false);
+			a.music(resp.data.title, resp.data.file);
 		  ytQueue.title.push(resp.data.title);
 		  ytQueue.time.push(resp.data.duration * 1000);
 		  ytQueue.name.push(u);
 		  ytQueue.link.push(resp.data.file);
+			ytQueue.id.push(resp.data.youtube_id);
 	  }
 	  else if ytQueue.title.length < 6 then {
-		  ytQueue.on.push(false);
 		  ytQueue.title.push(resp.data.title);
 		  ytQueue.time.push(resp.data.duration * 1000);
 		  ytQueue.name.push(u);
 		  ytQueue.link.push(resp.data.file);
+			ytQueue.id.push(resp.data.youtube_id);
 		  a.print(resp.data.title + " - добавлен в очередь.");
 	  }
 	  else {
 		  a.print("Максимум 5 треков в очереди, текущее количество - !q.");
 	  }
+	}
+}
+
+ytQ = (call) => {
+	ytQueue.link.forEach(x => {
+		if x === ytQueue.link[0] then
+			ytQueue.type++;
+	});
+					
+	if ytQueue.type > 1 then {
+		ytQueue.title.splice(0,1);
+		ytQueue.time.splice(0,1);
+		ytQueue.name.splice(0,1);
+		ytQueue.link.splice(0,1);
+		ytQueue.id.splice(0,1);
+		ytQueue.type = 0;
+		call();
+	}
+	else {
+		console.log(ytQueue.id[0]);
+					
+		axios("https://convertdrrr.herokuapp.com/conv.php?delete=" + ytQueue.id[0])
+			.then(res => {
+				if res.data.error === false then {
+					console.log("Delete mp3 file from Heroku - ok".green);
+					ytQueue.id.splice(0,1);
+				  ytQueue.title.splice(0,1);
+				  ytQueue.time.splice(0,1);
+				  ytQueue.name.splice(0,1);
+				  ytQueue.link.splice(0,1);
+					ytQueue.type = 0;
+					call();
+				}
+			}).catch( error => console.log(error.response.status + " - " + error.response.statusText));
 	}
 }
 
@@ -275,6 +302,7 @@ batch_print = (msg, type, call) => {
   else {
     msgs.reverse();
     msgs.forEach(m => a.print(m));
+		call();
   }
 }
 
@@ -328,21 +356,33 @@ timer 60000 * 60 {
 }
 
 timer 3000 {
+	if Object.values(ytQueue.title).length then {
+		ytQueue.time[0] = ytQueue.time[0] - 3000;
+		
+		if ytQueue.time[0] <= 0 then {
+			ytQ(() => a.music(ytQueue.title[0], ytQueue.link[0]));
+		}
+	}
+}
+
+/*timer 3000 {
 	if Object.values(ytQueue.on).length then {
 	  if ytQueue.on[0] == false then {
 		  ytQueue.on[0] = true;
+			
 			a.music(ytQueue.title[0], ytQueue.link[0], () => {
+				
 				later ytQueue.time[0] {
-			    ytQueue.on.splice(0,1);
-				  ytQueue.title.splice(0,1);
-				  ytQueue.time.splice(0,1);
-				  ytQueue.name.splice(0,1);
-				  ytQueue.link.splice(0,1);
+					
+					if ytQueue.next === false then {
+					  ytQ();
+					}
+					else 
 		    }
 			});
 	  }
   }
-}
+}*/
 
 timer 60000 * 15 {
 	a.getLoc(() => {
@@ -439,7 +479,7 @@ event [msg, dm] (u, m: "^!h") => {
 }
 
 event [msg, dm] (u, m: "^!upd") => {
-	a.print("v2.1\n⤷Свой конвертер, можно ставить треки до 10 минут. То много хороших песенок, которые идут 5+ минут. с: (пока на тест)");
+	a.print("v2.2\n⤷Свой конвертер, можно ставить треки до 10 минут. То много хороших песенок, которые идут 5+ минут. с:");
 }
 
 event [dm] (u, m: "^!p") => {
@@ -495,11 +535,7 @@ event [msg, me] (u, m: "^!q") => {
 
 event [msg, me] (u, m: "^!next") => {
 	if u === ytQueue.name[0] then {
-		ytQueue.on.splice(0,1);
-		ytQueue.title.splice(0,1);
-		ytQueue.time.splice(0,1);
-		ytQueue.name.splice(0,1);
-		ytQueue.link.splice(0,1);
+		ytQueue.time[0] = 0;
 	}
 }
 
@@ -513,13 +549,13 @@ event [msg, me] (u, m: "^!list") => {
     ytLink(ytList[m.substring(6)][2], resp => {
 			if resp !== "no" then {
 			  if resp.data.error == true then
-		      a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+		      a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
 			  else if ytQueue.title.length !== 6 then {
-				  ytQueue.on.push(false);
 				  ytQueue.title.push(ytList[m.substring(6)][0]);
 				  ytQueue.time.push(((ytList[m.substring(6)][1].substring(0, 1) * 60) * 1000) + (ytList[m.substring(6)][1].substring(2) * 1000));
 				  ytQueue.name.push(u);
 				  ytQueue.link.push(resp.data.file);
+					ytQueue.id.push(resp.data.youtube_id);
 				
 				  if ytQueue.title.length then
 				    a.print(resp.data.title + " - добавлен в очередь.");
@@ -742,8 +778,8 @@ BotLogin = () => {
 			a.getLoc(() => {
 			  if a.room.roomId == roomchik then {
 				  console.log("bot loaded");
-				  if a.room.description !== "night | !h - инфа по командам | v2.1" then {
-					  a.descr("night | !h - инфа по командам | v2.1");
+				  if a.room.description !== "night | !h - инфа по командам | v2.2" then {
+					  a.descr("night | !h - инфа по командам | v2.2");
 					  going beginBot;
 				  }
 				  else going beginBot;
