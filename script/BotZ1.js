@@ -520,7 +520,7 @@ event [dm] (u, m: "^!v") => {
 	}
 	else if m.match("\\(") then {
 		msg = m.substring(3);
-	  box.text.unshift("Дата и время отправки по мск: " + pbDate() + "\n⤷Для кого: " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n⤷Сообщение:" + msg.substring(msg.indexOf(") ") + 1));
+	  box.text.unshift("Дата и время отправки по мск: " + pbDate() + "\n⤷О ком: " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n⤷Сплетня:" + msg.substring(msg.indexOf(") ") + 1));
 	
 	  fs.writeFile("./saves/v.json", JSON.stringify(box), () => {
 			a.dm(u, "Что бы это ни было, оно сохранено.");
