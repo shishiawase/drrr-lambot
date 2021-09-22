@@ -5,7 +5,29 @@ const puppeteer = require('puppeteer');
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const youtubesearchapi = require('youtube-search-api');
+const PasteClient = require('pastebin-api').default;
+
+key = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
 cat = new Catbox.Catbox("");
+
+globalThis.Box = (text, call) => {
+	
+  const client = new PasteClient(key.pb[0]);
+  const urlpb = async () => {
+		
+		const token = await client.login(key.pb[1], key.pb[2]);
+	  let data = await client.createPaste({
+      code: 'Новые сообщения будут появляться сверху, следовательно самые старые будут оставаться внизу.\nРазвлекайтесь дамы и господа.~ И помните, я никого не сдам, что бы это ни было.)\n\n' + text,
+      expireDate: '1D',
+      name: 'Box',
+      publicity: 0,
+			apiUserKey: token,
+    });
+    return data;
+  }
+
+  urlpb().then(x => call(x)).catch(err => console.log(err));
+}
 
 globalThis.zodiac = (type, call) => {
     url = 'https://horo.mail.ru/prediction/' + type + '/today/';

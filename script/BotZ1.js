@@ -2,11 +2,27 @@ catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
 pred = {};
+datepb = {
+	"day": "",
+	"month": "",
+}
+box = {
+	"text": [],
+	"url": "",
+};
 
+if !JSON.parse(fs.readFileSync("./saves/v.json", "utf8")) then {
+	box = {
+	  "text": [],
+	  "url": "",
+  };
+}
+else box = JSON.parse(fs.readFileSync("./saves/v.json", "utf8"));
 if !JSON.parse(fs.readFileSync("./saves/p.json", "utf8")) then {
 	pred = {};
 }
 else pred = JSON.parse(fs.readFileSync("./saves/p.json", "utf8"));
+
 //-------------------ZODIAC-------------------↓
 
 zodSwitch = true;
@@ -340,9 +356,25 @@ state restartBot {
 state beginBot {
 //-------------------TIMERS-------------------↓
 
+pbDate = () => {
+	newDate = new Date();
+	datepb.day = newDate.getDate
+	
+	nowDate = (if (newDate.getDate() - 1) == 0 then datepb.day else newDate.getDate()) + "." + (if (newDate.getMonth() - 1) == 0 then datepb.month else newDate.getMonth()) + "." + newDate.getFullYear() + "  " + (newDate.getHours() + 3) + ":" + (newDate.getMinutes() + 3);
+  datepb.day = newDate.getDate();
+	datepb.month = newDate.getMonth();
+	return nowDate;
+}
+
 time = (type) => {
   date = new Date();
   return date[type]();
+}
+
+timer 60000 * 60 {
+	if time("getHours") == 2 then {
+	  Box(box.text.join("\n\n") + "", x => box.url = x);
+  }
 }
 
 timer 60000 * 60 {
@@ -475,11 +507,32 @@ tgBot.launch();
 //-------------------TELEGRAM-------------------↑
 
 event [msg, dm] (u, m: "^!h") => {
-  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!find (прикрепите картинку через кнопочку) - поиск аниме по кадру, скриншоту.\n⤷!say - C:\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
+  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!find (прикрепите картинку через кнопочку) - поиск аниме по кадру, скриншоту.\n⤷!say(в ЛС) - C:\n⤷!v(в ЛС) - сплетница.\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
 }
 
 event [msg, dm] (u, m: "^!upd") => {
-	a.print("v2.2\n⤷Свой конвертер, можно ставить треки до 10 минут. То много хороших песенок, которые идут 5+ минут. с:");
+	a.print("v2.3\n⤷Это интересный апдейт, в целом все написано в описании румы.) Добавлена сплетница.");
+}
+
+event [dm] (u, m: "^!v") => {
+	if m === "!v" then {
+		batch_dm(u, "Пример: !v (девяточка) сообщение. Скобки обязательны.\n!box(можно не в ЛС) - посмотреть, что наотправляли в коробку, обновляется раз в сутки в 5+ утра по мск.");
+	}
+	else if m.match("\\(") then {
+		msg = m.substring(3);
+	  box.text.unshift("Дата и время отправки по мск: " + pbDate() + "\n⤷Для кого: " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n⤷Сообщение:" + msg.substring(msg.indexOf(") ") + 1));
+	
+	  fs.writeFile("./saves/v.json", JSON.stringify(box), () => {
+			a.dm(u, "Что бы это ни было, оно сохранено.");
+	  });
+	}
+}
+
+event [dm, msg] (u, m: "^!box") => {
+  if !box.url.length then {
+		a.print("Функция только появилась, если кто-то что-то написал, то оно появится после полуночи по мск.")
+	}
+	else a.print("Ссылка на письмена:", box.url.replace("com/", "com/raw/"));
 }
 
 event [dm] (u, m: "^!p") => {
@@ -724,7 +777,7 @@ log2mkd = (type, e) => {
 
 sendTg = (token, chat_id, type, e) => {
 	
-	chat_id.forEach(chat_ID => {
+	if e.text.match("^!v") then {
 		axios({
 	    "method": "POST",
 		  "url": "https://api.telegram.org/bot" + token + "/sendMessage",
@@ -732,7 +785,7 @@ sendTg = (token, chat_id, type, e) => {
 			  "dataType": "json",
 		  },
 		  "data": {
-        "chat_id": chat_ID,
+        "chat_id": chat_id[0],
         "text": log2mkd(type, e),
 			  "parse_mode": "Markdown",
         "disable_web_page_preview": false,
@@ -740,7 +793,26 @@ sendTg = (token, chat_id, type, e) => {
 	  }).catch(err => {
 	    console.log("failed:", err.response.data);
     });
-  })
+	}
+	else {
+		chat_id.forEach(chat_ID => {
+		  axios({
+	      "method": "POST",
+		    "url": "https://api.telegram.org/bot" + token + "/sendMessage",
+		    "headers": {
+			    "dataType": "json",
+		    },
+		    "data": {
+          "chat_id": chat_ID,
+          "text": log2mkd(type, e),
+			    "parse_mode": "Markdown",
+          "disable_web_page_preview": false,
+		    }
+	    }).catch(err => {
+	      console.log("failed:", err.response.data);
+      });
+    })
+	}
 }
 	
 event [msg, dm, me, join, leave] (u, m, url, trip, eventObject) => {
@@ -778,8 +850,8 @@ BotLogin = () => {
 			a.getLoc(() => {
 			  if a.room.roomId == roomchik then {
 				  console.log("bot loaded");
-				  if a.room.description !== "night | !h - инфа по командам | v2.2" then {
-					  a.descr("night | !h - инфа по командам | v2.2");
+				  if a.room.description !== "night | !h - инфа по командам | Появилась функция сплетницы, подробнее о ней - !v(в ЛС боту) v2.3" then {
+					  a.descr("night | !h - инфа по командам | Появилась функция сплетницы, подробнее о ней - !v(в ЛС боту) v2.3");
 					  going beginBot;
 				  }
 				  else going beginBot;
