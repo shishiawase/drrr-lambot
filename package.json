@@ -8,10 +8,8 @@
     "https": "^1.0.0",
     "jsdom": "^17.0.0",
     "node-fetch": "^2.6.1",
-    "pastebin-api": "^2.3.6",
     "puppeteer": "^10.2.0",
     "sharp": "^0.29.1",
-    "socks-proxy-agent": "^6.0.0",
     "telegraf": "^4.4.1",
     "tinyurl": "^1.1.7",
     "youtube-search-api": "^1.0.10"

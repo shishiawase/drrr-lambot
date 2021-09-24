@@ -372,12 +372,6 @@ time = (type) => {
 }
 
 timer 60000 * 60 {
-	if time("getHours") == 2 then {
-	  Box(box.text.join("\n\n") + "", x => box.url = x);
-  }
-}
-
-timer 60000 * 60 {
   if time("getHours") == 21 then {
     upZod();
     names = [];
@@ -524,6 +518,9 @@ event [dm] (u, m: "^!v") => {
 	
 	  fs.writeFile("./saves/v.json", JSON.stringify(box), () => {
 			a.dm(u, "Что бы это ни было, оно сохранено.");
+			fs.writeFile("./saves/splet/box.txt", box.text.join("\n\n") + "", () => {
+			  console.log("Сплетня сохранена.");
+		  });
 	  });
 	}
 }
@@ -873,6 +870,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "2jNEBMDj3E";
+roomchik = "UapMw8GUo1";
 
 BotLogin();
