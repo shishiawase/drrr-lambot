@@ -444,7 +444,7 @@ event [dm] (u, m: "^!v", url) => {
 		msg = msg.replace(reChar, m => chars[m]);
 		link = encodeURIComponent(url);
 		
-		later 60000*rand(1, 17) tgChannel.telegram.sendMessage("-1001358047219", "**О ком:** " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n**⤷ Сплетня:**" + msg.substring(msg.indexOf(") ") + 1) + (if link then " [URL](" + link + ")" else ""), "Markdown");
+		later 60000*rand(1, 17) tgChannel.telegram.sendMessage("-1001358047219", "*О ком:* " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n*⤷ Сплетня:*" + msg.substring(msg.indexOf(") ") + 1) + (if link then " [URL](" + link + ")" else ""), { parse_mode: "Markdown" });
 	  a.dm(u, "Что бы это ни было, оно сохранено.");
 	}
 }
