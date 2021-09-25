@@ -529,7 +529,7 @@ event [dm, msg] (u, m: "^!box") => {
   if !box.url.length then {
 		a.print("Функция только появилась, если кто-то что-то написал, то оно появится после 5 утра по мск.")
 	}
-	else a.print("Ссылка на письмена:", box.url.replace("com/", "com/raw/"));
+	else a.print("Ссылка на письмена:", box.url);
 }
 
 event [dm] (u, m: "^!p") => {
