@@ -424,7 +424,30 @@ timer 60000 * 15 {
 
 //-------------------TELEGRAM-------------------↓
 const tgBot = new Telegraf(tg.botTok);
+const tgChannel = new Telegraf(tg.channelTok);
 regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+
+event [dm] (u, m: "^!v", url) => {
+	if m === "!v" then {
+		batch_dm(u, "Пример: !v (о ком хотите что-то рассказать) сообщение. В скобках ник, кличка, паспорт, что хотите в общем связанное с кем либо, после сообщение через пробел. Скобки обязательны.\n!box(можно не в ЛС) - посмотреть, что наотправляли в коробку и как вообще это выглядит.");
+	}
+	else if m.match("\\(") then {
+		chars = {
+		  "_": "\\_",
+		  "*": "\\*",
+		  "[": "\\[",
+		  "`": "\\`"
+	  };
+	  reChar = new RegExp("_|\\*|\\[|`", "gi");
+	
+		msg = m.substring(3);
+		msg = msg.replace(reChar, m => chars[m]);
+		link = encodeURIComponent(url);
+		
+		later 60000*rand(1, 17) tgChannel.telegram.sendMessage("-1001358047219", "*О ком:* " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n*⤷Сплетня:*" + msg.substring(msg.indexOf(") ") + 1) + (if link then " [URL](" + link + ")" else ""), "Markdown");
+	  a.dm(u, "Что бы это ни было, оно сохранено.");
+	}
+}
 
 tgBot.start(ctx => ctx.reply("Добро пожаловать c:"));
 tgBot.command("dm", ctx => {
@@ -497,6 +520,7 @@ tgBot.on("sticker", ctx => {
 		}
 });
 tgBot.launch();
+tgChannel.launch();
 
 //-------------------TELEGRAM-------------------↑
 
@@ -508,28 +532,8 @@ event [msg, dm] (u, m: "^!upd") => {
 	a.print("v2.3\n⤷Это интересный апдейт, в целом все написано в описании румы.) Добавлена сплетница.");
 }
 
-event [dm] (u, m: "^!v") => {
-	if m === "!v" then {
-		batch_dm(u, "Пример: !v (о ком хотите что-то рассказать) сообщение. В скобках ник, кличка, паспорт, что хотите в общем связанное с кем либо, после сообщение через пробел. Скобки обязательны.\n!box(можно не в ЛС) - посмотреть, что наотправляли в коробку и как вообще это выглядит.");
-	}
-	else if m.match("\\(") then {
-		msg = m.substring(3);
-	  box.text.unshift("Дата и время отправки по мск: " + pbDate() + "\n⤷О ком: " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n⤷Сплетня:" + msg.substring(msg.indexOf(") ") + 1));
-	
-	  fs.writeFile("./saves/v.json", JSON.stringify(box), () => {
-			a.dm(u, "Что бы это ни было, оно сохранено.");
-			fs.writeFile("./saves/splet/box.txt", box.text.join("\n\n") + "", () => {
-			  console.log("Сплетня сохранена.");
-		  });
-	  });
-	}
-}
-
 event [dm, msg] (u, m: "^!box") => {
-  if !box.url.length then {
-		a.print("Функция только появилась, если кто-то что-то написал, то оно появится.")
-	}
-	else a.print("Ссылка на письмена:", box.url);
+  a.print("Ссылка на письмена:", "https://t.me/joinchat/Mqu-vA03JMoxODNi");
 }
 
 event [dm] (u, m: "^!p") => {
