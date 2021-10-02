@@ -2,22 +2,7 @@ catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
 pred = {};
-datepb = {
-	"day": "",
-	"month": "",
-}
-box = {
-	"text": [],
-	"url": "",
-};
 
-if !JSON.parse(fs.readFileSync("./saves/v.json", "utf8")) then {
-	box = {
-	  "text": [],
-	  "url": "",
-  };
-}
-else box = JSON.parse(fs.readFileSync("./saves/v.json", "utf8"));
 if !JSON.parse(fs.readFileSync("./saves/p.json", "utf8")) then {
 	pred = {};
 }
@@ -159,27 +144,6 @@ tarFunc = (name) => {
 //-------------------YOUTUBE-------------------↓
 ytList = {};
 ytText = "";
-ytQText = "";
-ytQueue = {
-	"title": [],
-	"time": [],
-	"name": [],
-	"link": [],
-	"id": [],
-	"type": 0,
-};
-
-queue = (num) => {
-	if ytQueue.title.length >= 2 then {
-		
-		if num < (ytQueue.title.length - 1) then {
-			num++;
-			ytQText = ytQText + ("\n⤷" + num + ". " + ytQueue.title[num] + " - добавил " + ytQueue.name[num]);
-			queue(num);
-		}
-		else return ytQText;
-	}
-}
 
 listText = (num) => {
 	if num < Object.keys(ytList).length then {
@@ -204,63 +168,11 @@ ytLink = (id, call) => {
 		})
 }
 
-ythuyut = (resp, u) => {
+ythuyut = (resp) => {
 	if resp !== "no" then {
 	  if resp.data.error == true then
 		  a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
-	  else if !ytQueue.title.length then {
-			a.music(resp.data.title, resp.data.file);
-		  ytQueue.title.push(resp.data.title);
-		  ytQueue.time.push(resp.data.duration * 1000);
-		  ytQueue.name.push(u);
-		  ytQueue.link.push(resp.data.file);
-			ytQueue.id.push(resp.data.youtube_id);
-	  }
-	  else if ytQueue.title.length < 6 then {
-		  ytQueue.title.push(resp.data.title);
-		  ytQueue.time.push(resp.data.duration * 1000);
-		  ytQueue.name.push(u);
-		  ytQueue.link.push(resp.data.file);
-			ytQueue.id.push(resp.data.youtube_id);
-		  a.print(resp.data.title + " - добавлен в очередь.");
-	  }
-	  else {
-		  a.print("Максимум 5 треков в очереди, текущее количество - !q.");
-	  }
-	}
-}
-
-ytQ = (call) => {
-	ytQueue.link.forEach(x => {
-		if x === ytQueue.link[0] then
-			ytQueue.type++;
-	});
-					
-	if ytQueue.type > 1 then {
-		ytQueue.title.splice(0,1);
-		ytQueue.time.splice(0,1);
-		ytQueue.name.splice(0,1);
-		ytQueue.link.splice(0,1);
-		ytQueue.id.splice(0,1);
-		ytQueue.type = 0;
-		call();
-	}
-	else {
-		console.log(ytQueue.id[0]);
-					
-		axios("https://convertdrrr.herokuapp.com/conv.php?delete=" + ytQueue.id[0])
-			.then(res => {
-				if res.data.error === false then {
-					console.log("Delete mp3 file from Heroku - ok".green);
-					ytQueue.id.splice(0,1);
-				  ytQueue.title.splice(0,1);
-				  ytQueue.time.splice(0,1);
-				  ytQueue.name.splice(0,1);
-				  ytQueue.link.splice(0,1);
-					ytQueue.type = 0;
-					call();
-				}
-			}).catch( error => console.log(error.response.status + " - " + error.response.statusText));
+	  else a.music(resp.data.title, resp.data.file);
 	}
 }
 
@@ -356,16 +268,6 @@ state restartBot {
 state beginBot {
 //-------------------TIMERS-------------------↓
 
-pbDate = () => {
-	newDate = new Date();
-	datepb.day = newDate.getDate
-	
-	nowDate = (if (newDate.getDate() - 1) == 0 then datepb.day else newDate.getDate()) + "." + (if (newDate.getMonth() - 1) == 0 then datepb.month else newDate.getMonth()) + "." + newDate.getFullYear() + "  " + (newDate.getHours() + 3) + ":" + (newDate.getMinutes() + 3);
-  datepb.day = newDate.getDate();
-	datepb.month = newDate.getMonth();
-	return nowDate;
-}
-
 time = (type) => {
   date = new Date();
   return date[type]();
@@ -381,41 +283,18 @@ timer 60000 * 60 {
   }
 }
 
-timer 3000 {
-	if Object.values(ytQueue.title).length then {
-		ytQueue.time[0] = ytQueue.time[0] - 3000;
-		
-		if ytQueue.time[0] <= 0 then {
-			ytQ(() => a.music(ytQueue.title[0], ytQueue.link[0]));
-		}
-	}
+checkRoom = (num) => {
+	if num !== 3 then
+	  if a.room.roomId !== roomchik then
+		  later 5000 checkRoom(num++);
+		else a.dm(a.profile.name, ".");
+	else going restartBot;
 }
 
-/*timer 3000 {
-	if Object.values(ytQueue.on).length then {
-	  if ytQueue.on[0] == false then {
-		  ytQueue.on[0] = true;
-			
-			a.music(ytQueue.title[0], ytQueue.link[0], () => {
-				
-				later ytQueue.time[0] {
-					
-					if ytQueue.next === false then {
-					  ytQ();
-					}
-					else 
-		    }
-			});
-	  }
-  }
-}*/
-
-timer 60000 * 15 {
+timer 60000 * 10 {
 	a.getLoc(() => {
-		if a.room.roomId == roomchik then
-		  a.dm(a.profile.name, ".");
-		else going restartBot;
-	});
+		checkRoom(0);
+	})
 }
 
 //-------------------TIMERS-------------------↑
@@ -525,11 +404,11 @@ tgChannel.launch();
 //-------------------TELEGRAM-------------------↑
 
 event [msg, dm] (u, m: "^!h") => {
-  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!q - список треков в очереди.\n⤷!next - пропустить текущую песню и поставить следующую(работает только у того, кто ставил текущий трек).\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!find (прикрепите картинку через кнопочку) - поиск аниме по кадру, скриншоту.\n⤷!say(в ЛС) - C:\n⤷!v(в ЛС) - сплетница.\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
+  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!say(в ЛС) - C:\n⤷!v(в ЛС) - сплетница.\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
 }
 
 event [msg, dm] (u, m: "^!upd") => {
-	a.print("v2.3\n⤷Это интересный апдейт, в целом все написано в описании румы.) Добавлена сплетница.");
+	a.print("v2.3\n⤷Удалено то, что не юзалось.");
 }
 
 event [dm, msg] (u, m: "^!box") => {
@@ -563,12 +442,12 @@ event [msg, me] (u, m: "!y") => {
 			if mes.match(" ") then {
 				mes = mes.substring(0, mes.search(" "));
 				ytLink(mes, data => {
-				  ythuyut(data, u);
+				  ythuyut(data);
 			  });
 			}
 			else {
 				ytLink(mes, data => {
-				  ythuyut(data, u);
+				  ythuyut(data);
 			  });
 			}
 		}
@@ -576,21 +455,10 @@ event [msg, me] (u, m: "!y") => {
       ytSearch(m.replace(reY, ""), ylist =>  {
 			  ytList = ylist;
 			  ytLink(ytList[1][2], data => {
-				  ythuyut(data, u);
+				  ythuyut(data);
 			  });
 		  });
     }
-}
-
-event [msg, me] (u, m: "^!q") => {
-	ytQText = "";
-	batch_print((if ytQueue.title.length > 1 then { return "В очереди:" + queue(0); } else { return "В очереди ничего нет." }), "music");
-}
-
-event [msg, me] (u, m: "^!next") => {
-	if u === ytQueue.name[0] then {
-		ytQueue.time[0] = 0;
-	}
 }
 
 event [msg, me] (u, m: "^!list") => {
@@ -601,42 +469,9 @@ event [msg, me] (u, m: "^!list") => {
     a.print("Такого числа нет в списке.");
   else if num.match("^\\d$") then {
     ytLink(ytList[m.substring(6)][2], resp => {
-			if resp !== "no" then {
-			  if resp.data.error == true then
-		      a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
-			  else if ytQueue.title.length !== 6 then {
-				  ytQueue.title.push(ytList[m.substring(6)][0]);
-				  ytQueue.time.push(((ytList[m.substring(6)][1].substring(0, 1) * 60) * 1000) + (ytList[m.substring(6)][1].substring(2) * 1000));
-				  ytQueue.name.push(u);
-				  ytQueue.link.push(resp.data.file);
-					ytQueue.id.push(resp.data.youtube_id);
-				
-				  if ytQueue.title.length then
-				    a.print(resp.data.title + " - добавлен в очередь.");
-			  }
-			  else a.print("Максимум 5 треков в очереди, текущие количество - !q.");
-			}
+			ythuyut(resp);
     });
   }
-}
-
-event msg (u, m: "^!find", urlTrace) => {
-	timeA = s => (new Date(s * 1000)).toISOString().substr(11, 8);
-
-  urlTrace = "https://api.trace.moe/search?url=" + encodeURIComponent(urlTrace);
-  ep = if res.episode then " ep." + res.episode else "";
-  feetch(urlTrace)
-    .then(resp => resp.json())
-    .then(res => {
-			console.log(res);
-      res = res.result[0];
-      tiny.shorten(res.image, url => a.print(
-        res.filename + ep + "\n" +
-        "Схожесть и кадр: " + String(res.similarity.toFixed(2)), url))
-      tiny.shorten(res.video, url => a.print(
-        res.filename + ep + "\n" + "Отрывок: " +
-        timeA(res.from) + " ~ " + timeA(res.to) + "\n", url))
-    })
 }
 
 event msg (u, m: "^!zod") => {
@@ -712,7 +547,7 @@ event msg (u, m: "^!taro") => {
 
       if user.tripcode then {
         if names.includes(user.tripcode) then {
-          a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
+          a.print("@" + u + " ты сегодня уже гадал(a), хватит с тебя.");
           zodSwitch = true;
           taroSwitch = true;
         }
@@ -723,7 +558,7 @@ event msg (u, m: "^!taro") => {
         }
       }
       else if names.includes(u) then {
-        a.print("@" + u + " ты сегодня уже гадал, хватит с тебя.");
+        a.print("@" + u + " ты сегодня уже гадал(a), хватит с тебя.");
         zodSwitch = true;
         taroSwitch = true;
       }
@@ -741,14 +576,9 @@ event dm (u, m: "^!say") => {
 	  a.print(m.substring(5));
 }
 
-event dm (u, m: "^!отдай$") => {
-	a.getLoc(() => {
-		user = a.users.find(
-		  user => user.name == u)
-			
-		if user.tripcode == "Leu5XTRpi6" then
-		  a.handOver(u);
-	})
+event join (u, m, url, trip) => {
+	if trip === "Leu5XTRpi6" then
+		a.handOver(u);
 }
 
 //-------------------LOGS-------------------↓

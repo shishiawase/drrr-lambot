@@ -36,37 +36,6 @@ globalThis.zodiac = (type, call) => {
     })
 }
 
-/*globalThis.zodSmile = (type, call) => {
-	  url = 'http://stoboi.ru/gorodaily/horoscope.php?id=' + type;
-    got(url)
-    .then(resp => {
-        let textNodes = [];
-        let alltext = '';
-        const dom = new JSDOM(resp.body);
-        body = dom.window.document.querySelector('body');
-
-        function recursy(element) {
-            element.childNodes.forEach(node => {
-
-                if (node.nodeName.match(/^P$/)) {
-									console.log(node.innerText);
-									console.log(node.outerText);
-									console.log(node.innerHTML);
-                    const obj = node.innerText;
-                    textNodes.push(obj);
-                } else {
-                    recursy(node);
-                }
-            });
-        }
-
-        recursy(body);
-
-        alltext = textNodes[2] + ' ' + textNodes[3] + ' ' + textNodes[4];
-        call(alltext);
-    })
-}*/
-
 globalThis.ytSearch = (na, call) => {
     youtubesearchapi.GetListByKeyword(na, false).then(x => {
 			  let yt = {};
@@ -104,35 +73,6 @@ globalThis.ytSearch = (na, call) => {
 
     })
 }
-
-/*globalThis.ytDownload = (id, call) => {
-url = 'https://www.yt-download.org/file/mp3/' + id;
-    got(url, {
-			httpsAgent: agent, 
-		})
-    .then(resp => {
-			  console.log(resp);
-			  let dom = new JSDOM(resp.body);
-        let body = dom.window.document.querySelector('body');
-
-        let link = '';
-        let re = new RegExp("^https:\/\/www.yt-download.org\/download\/" + id + "\/mp3\/320", "gi");
-
-        function recursy (element) {
-            element.childNodes.forEach(node => {
-        
-                if ((node.href || '').match(re)) {
-                    link = node.href + '#.mp3';
-                } else {
-                    recursy(node);
-                }
-            });
-        }
-
-        recursy(body);
-        call(link);
-    })
-}*/ //работает, но не везде//
 
 globalThis.StickCon = (url, call) => {
 	
