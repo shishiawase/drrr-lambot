@@ -4,8 +4,8 @@ tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
 pred = {};
 greet = {};
 
-if !JSON.parse(fs.readFileSync("./saves/p.json", "utf8")) then {
-	pred = {};
+if (!JSON.parse(fs.readFileSync("./saves/p.json", "utf8"))) then {
+  pred = {};
 }
 else pred = JSON.parse(fs.readFileSync("./saves/p.json", "utf8"));
 if !JSON.parse(fs.readFileSync("./saves/greet.json", "utf8")) then {
@@ -160,12 +160,12 @@ listText = (num) => {
 }
 
 ytLink = (id, call) => {
-	
+
 	axios("https://convertdrrr.herokuapp.com/conv.php?youtubelink=https://www.youtube.com/watch?v=" + id)
 	  .then(resp => {
-			
+
 			call(resp);
-			
+
 		}).catch( err => {
 			console.log(err.response.status + " - " + err.response.statusText);
 			a.print("Запрос не прошел, повторите еще раз.");
@@ -322,26 +322,26 @@ state beginBot {
 		  batch_dm(u, "Пример: !v (о ком хотите что-то рассказать) сообщение. В скобках ник, кличка, паспорт, что хотите в общем связанное с кем либо, после сообщение через пробел. Скобки обязательны.\n!box(можно не в ЛС) - посмотреть, что наотправляли в коробку и как вообще это выглядит.");
 	  }
 	  else if m.match("\\(") then {
-	
+
 		  msg = m.substring(3);
 		  msg = msg.replace(reChar, m => chars[m]);
-		
+
 		  later 60000*rand(1, 17) tgChannel.telegram.sendMessage("-1001358047219", "*О ком:* " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n*⤷ Сплетня:*" + msg.substring(msg.indexOf(") ") + 1) + (if url then " [URL](" + url + ")" else ""), { parse_mode: "Markdown" });
 	    a.dm(u, "Что бы это ни было, оно сохранено.");
 	  }
   }
-	
+
 	event [dm, msg] (u, m: "!greet", url, trip) => {
 		msg = m.substring(7);
 		nt = msg.substring(msg.indexOf("(") + 1, msg.indexOf(")"));
 		ntRe = nt.replace(reChar, m => chars[m]);
-		
-		if m.match("-h") then 
+
+		if m.match("-h") then
 		  batch_dm(u, "Добавляет приветствие для себя или же для кого другого, флаг вам в руки как говорится. Пример: !greet (ник или #трип, трип всегда с решеткой) добро пожаловать. Вывод: @ник, добро пожаловать. Скобочки обязательны и можно с пикчей, если хочется.");
 		else if m.match("\\(") then {
 			if !Object.keys(greet).includes(nt) then {
 				if url then {
-					greet[nt] = { 
+					greet[nt] = {
 					  text: msg.substring(msg.indexOf(")") + 2),
 						url: url
 					};
@@ -364,7 +364,7 @@ state beginBot {
 			}
 			else {
 				if url then {
-					greet[nt] = { 
+					greet[nt] = {
 					  text: msg.substring(msg.indexOf(")") + 2),
 						url: url
 					};
@@ -389,7 +389,7 @@ state beginBot {
 	}
 
   tgBot.start(ctx => ctx.reply("Добро пожаловать c:"));
-	
+
   tgBot.command("dm", ctx => {
 	  mTgText = ctx.message.text.substring(ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
 	  mTgName = ctx.message.text.substring(ctx.message.text.indexOf(" ") + 1, ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
@@ -399,7 +399,7 @@ state beginBot {
 	      a.dm(mTgName, mTgText.replace(mTgLink, ""), (if mTgLink.match("http|https") then mTgLink else ""))
 		  }
   });
-	
+
   tgBot.command("kick", ctx => {
 	  mTg = ctx.message.text.replace("/kick ", "");
 	  if JSON.stringify(ctx.message.chat.id).match(regID)
@@ -408,7 +408,7 @@ state beginBot {
 			  tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет нах."));
 		  }
   });
-	
+
   tgBot.command("ban", ctx => {
 	  mTg = ctx.message.text.replace("/ban ", "");
 	  if JSON.stringify(ctx.message.chat.id).match(regID)
@@ -417,7 +417,7 @@ state beginBot {
 			  tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет в далекую писдень."));
 		  }
   });
-	
+
   tgBot.command("unban", ctx => {
 	  mTg = ctx.message.text.replace("/unban ", "");
 	  if JSON.stringify(ctx.message.chat.id).match(regID)
@@ -426,7 +426,7 @@ state beginBot {
 			  tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " оправдан."));
 		  }
   });
-	
+
   tgBot.on("text", ctx => {
 	  mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
 	  mTg = ctx.message.text;
@@ -435,19 +435,19 @@ state beginBot {
 			  rep = {};
 			  rep[tg.chatTok[0]] = "Каору:\n⤷";
 			  rep[tg.chatTok[1]] = "Кроль:\n⤷";
-			
+
 			  ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)] + " " + mTg + (if mTgLink.match("http|https") then " [URL](" + mTgLink + ")" else ""));
 			  a.print((if !mTg.replace(mTgLink, "") then mTg else mTg.replace(mTgLink, "")), (if mTgLink.match("http|https") then mTgLink else ""));
 		  }
   });
-	
+
   tgBot.on("sticker", ctx => {
 	  if JSON.stringify(ctx.message.chat.id).match(regID)
 	    then {
 			  rep = {};
 			  rep[tg.chatTok[0]] = "Каору:";
 			  rep[tg.chatTok[1]] = "Кроль:";
-			
+
 	      ctx.reply("Отправка...");
 	      file_id = ctx.message.sticker.file_id;
 	      ctx.telegram.getFileLink(file_id).then(x => {
@@ -464,7 +464,7 @@ state beginBot {
 	      });
 		  }
   });
-	
+
   tgBot.launch();
   tgChannel.launch();
 
@@ -481,7 +481,7 @@ state beginBot {
   event [dm, msg] (u, m: "^!box") => {
     a.print("Ссылка на письмена:", "https://t.me/joinchat/Mqu-vA03JMoxODNi");
   }
-	
+
   event [dm] (u, m: "^!p") => {
 	  if !Object.keys(pred).includes(u) then {
 	    pred[u].push(m.substring(3));
@@ -501,7 +501,7 @@ state beginBot {
 
   event [msg, me] (u, m: "!y") => {
 		ytText = "";
-		
+
 		reLink = new RegExp("\\?v=|be/", "gi");
 	  reY = new RegExp("!y\\s|\\s!y", "gi");
 		if m.match(reLink) then {
@@ -542,7 +542,7 @@ state beginBot {
   }
 
   event msg (u, m: "^!zod") => {
-	
+
     if zodSwitch == true then {
       zodSwitch = false;
       taroSwitch = false;
@@ -665,18 +665,18 @@ state beginBot {
 //-------------------LOGS-------------------↓
 
   log2mkd = (type, e) => {
-		
+
 	  chars = {
 		  "_": "\\_",
 		  "*": "\\*",
 		  "[": "\\[",
 		  "`": "\\`"
 	  }
-		
+
 	  reChar = new RegExp("_|\\*|\\[|`", "gi");
 	  e.user = e.user.replace(reChar, m => chars[m]);
 	  e.text = e.text.replace(reChar, m => chars[m]);
-	
+
     if(type === "msg")
       then "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
     else if(type === "me")
@@ -690,7 +690,7 @@ state beginBot {
   }
 
   sendTg = (token, chat_id, type, e) => {
-	
+
 	  if e.text.match("^!v") then {
 		  axios({
 	      "method": "POST",
@@ -728,11 +728,11 @@ state beginBot {
       })
 	  }
   }
-	
+
   event [msg, dm, me, join, leave] (u, m, url, trip, eventObject) => {
 	  if u !== a.profile.name then {
 		  sendTg(tg.botTok, tg.chatTok, eventObject.type, eventObject);
-		
+
 		  if eventObject.type === "msg" then console.log(u.cyan + ": ".yellow + m.yellow);
 	    else if eventObject.type === "dm" then console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
 	    else if eventObject.type === "me" then console.log("Действие(".yellow + u.cyan + "): ".yellow + m.yellow);
