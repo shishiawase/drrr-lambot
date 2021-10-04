@@ -335,22 +335,21 @@ state beginBot {
 		msg = m.substring(7);
 		nt = msg.substring(msg.indexOf("(") + 1, msg.indexOf(")"));
 		ntRe = nt.replace(reChar, m => chars[m]);
-    link = url;
 		
 		if m.match("-h") then 
 		  batch_dm(u, "Добавляет приветствие для себя или же для кого другого, флаг вам в руки как говорится. Пример: !greet (ник или #трип, трип всегда с решеткой) добро пожаловать. Вывод: @ник, добро пожаловать. Скобочки обязательны и можно с пикчей, если хочется.");
 		else if m.match("\\(") then {
 			if !Object.keys(greet).includes(nt) then {
-				if link then {
+				if url then {
 					greet[nt] = { 
 					  text: msg.substring(msg.indexOf(")") + 2),
-						url: link
+						url: url
 					};
 				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
 		        console.log("Приветствие сохранено.");
 	        });
 				  a.dm(u, "Приветствие сохранено.");
-					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, сохранено.", { parse_mode: "Markdown" });
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe + "*, сохранено.", { parse_mode: "Markdown" });
 				}
 				else {
 				  greet[nt] = {
@@ -360,20 +359,20 @@ state beginBot {
 		        console.log("Приветствие сохранено.");
 	        });
 				  a.dm(u, "Приветствие сохранено.");
-					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, сохранено.", { parse_mode: "Markdown" });
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe + "*, сохранено.", { parse_mode: "Markdown" });
 				}
 			}
 			else {
-				if link then {
+				if url then {
 					greet[nt] = { 
 					  text: msg.substring(msg.indexOf(")") + 2),
-						url: link
+						url: url
 					};
 				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
 		        console.log("Приветствие перезаписано.");
 	        });
 				  a.dm(u, "Приветствие перезаписано.");
-					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, перезаписано.", { parse_mode: "Markdown" });
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe + "*, перезаписано.", { parse_mode: "Markdown" });
 				}
 				else {
 				  greet[nt] = {
@@ -383,7 +382,7 @@ state beginBot {
 		        console.log("Приветствие перезаписано.");
 	        });
 				  a.dm(u, "Приветствие перезаписано.");
-					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, перезаписано.", { parse_mode: "Markdown" });
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe + "*, перезаписано.", { parse_mode: "Markdown" });
 				}
 			}
 		}
@@ -775,7 +774,7 @@ BotLogin = () => {
 			})
 	  });
   }
-  else { 
+  else {
     a.login(() => {
 	    a.save();
 	    a.join(roomchik, () => {
@@ -788,6 +787,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "2jNEBMDj3E";
+roomchik = "AQ2XaYZ2Uq";
 
 BotLogin();
