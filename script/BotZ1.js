@@ -80,7 +80,7 @@ upZod = () => {
 if (!JSON.parse(fs.readFileSync("./saves/zod.json", "utf8"))) then {
   upZod();
   later 2000 fs.writeFile("./saves/zod.json", JSON.stringify(lucky), () => {
-	  console.log("Зодиак записан.");
+    console.log("Зодиак записан.");
   });
 }
 else lucky = JSON.parse(fs.readFileSync("./saves/zod.json", "utf8"));
@@ -152,9 +152,9 @@ ytText = "";
 
 listText = (num) => {
   if (num < Object.keys(ytList).length) then {
-	  num++;
+    num++;
     ytText = ytText + "\n⤷" + num + ": " + ytList[num][0] + " - " + ytList[num][1];
-	  listText(num);
+    listText(num);
   }
   else return ytText;
 }
@@ -164,13 +164,13 @@ ytLink = (id, call) => {
   axios("https://convertdrrr.herokuapp.com/conv.php?youtubelink=https://www.youtube.com/watch?v=" + id)
     .then(resp => {
 
-		  call(resp);
+      call(resp);
 
-	  }).catch( err => {
-		  console.log(err.response.status + " - " + err.response.statusText);
-	    a.print("Запрос не прошел, повторите еще раз.");
-		  call("no");
-	  })
+    }).catch( err => {
+      console.log(err.response.status + " - " + err.response.statusText);
+      a.print("Запрос не прошел, повторите еще раз.");
+      call("no");
+    })
 }
 
 ythuyut = (resp) => {
@@ -179,7 +179,7 @@ ythuyut = (resp) => {
       a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
     }
     else a.music(resp.data.title, resp.data.file);
-	}
+  }
 }
 
 //-------------------YOUTUBE-------------------↑
@@ -336,7 +336,7 @@ state beginBot {
     nt = msg.substring(msg.indexOf("(") + 1, msg.indexOf(")"));
     ntRe = nt.replace(reChar, m => chars[m]);
 
-		if (m.match("-h")) then {
+    if (m.match("-h")) then {
       batch_dm(u, "Добавляет приветствие для себя или же для кого другого, флаг вам в руки как говорится. Пример: !greet (ник или #трип, трип всегда с решеткой) добро пожаловать. Вывод: @ник, добро пожаловать. Скобочки обязательны и можно с пикчей, если хочется.");
     }
     else if (m.match("\\(")) then {
