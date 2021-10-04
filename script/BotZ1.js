@@ -2,11 +2,16 @@ catcherZ = "djkfdj4k121";
 catcherT = "54dsaj35ja";
 tg = JSON.parse(fs.readFileSync("./tg/toks.json", "utf8"));
 pred = {};
+greet = {};
 
 if !JSON.parse(fs.readFileSync("./saves/p.json", "utf8")) then {
 	pred = {};
 }
 else pred = JSON.parse(fs.readFileSync("./saves/p.json", "utf8"));
+if !JSON.parse(fs.readFileSync("./saves/greet.json", "utf8")) then {
+	greet = {};
+}
+else greet = JSON.parse(fs.readFileSync("./saves/greet.json", "utf8"));
 
 //-------------------ZODIAC-------------------↓
 
@@ -268,171 +273,233 @@ state restartBot {
 state beginBot {
 //-------------------TIMERS-------------------↓
 
-time = (type) => {
-  date = new Date();
-  return date[type]();
-}
-
-timer 60000 * 60 {
-  if time("getHours") == 21 then {
-    upZod();
-    names = [];
-		fs.writeFile("./saves/zod.json", JSON.stringify(lucky), () => {
-		  console.log("Перезапись ЗЗ");
-	  });
+  time = (type) => {
+    date = new Date();
+    return date[type]();
   }
-}
 
-checkRoom = (num) => {
-	if num !== 3 then
-	  if a.room.roomId !== roomchik then
-		  later 5000 checkRoom(num++);
-		else a.dm(a.profile.name, ".");
-	else going restartBot;
-}
+  timer 60000 * 60 {
+    if time("getHours") == 21 then {
+      upZod();
+      names = [];
+		  fs.writeFile("./saves/zod.json", JSON.stringify(lucky), () => {
+		    console.log("Перезапись ЗЗ");
+	    });
+    }
+  }
 
-timer 60000 * 10 {
-	a.getLoc(() => {
-		checkRoom(0);
-	})
-}
+  checkRoom = (num) => {
+	  if num !== 3 then
+	    if a.room.roomId !== roomchik then
+		    later 5000 checkRoom(num++);
+		  else a.dm(a.profile.name, ".");
+	  else going restartBot;
+  }
+
+  timer 60000 * 10 {
+	  a.getLoc(() => {
+		  checkRoom(0);
+	  })
+  }
 
 //-------------------TIMERS-------------------↑
 
 //-------------------EVENTS-------------------↓
 
 //-------------------TELEGRAM-------------------↓
-const tgBot = new Telegraf(tg.botTok);
-const tgChannel = new Telegraf(tg.channelTok);
-regID = new RegExp("" + tg.chatTok.join("|"), "gi");
-
-event [dm] (u, m: "^!v", url) => {
-	if m === "!v" then {
-		batch_dm(u, "Пример: !v (о ком хотите что-то рассказать) сообщение. В скобках ник, кличка, паспорт, что хотите в общем связанное с кем либо, после сообщение через пробел. Скобки обязательны.\n!box(можно не в ЛС) - посмотреть, что наотправляли в коробку и как вообще это выглядит.");
-	}
-	else if m.match("\\(") then {
-		chars = {
-		  "_": "\\_",
-		  "*": "\\*",
-		  "[": "\\[",
-		  "`": "\\`"
-	  };
-	  reChar = new RegExp("_|\\*|\\[|`", "gi");
+  const tgBot = new Telegraf(tg.botTok);
+  const tgChannel = new Telegraf(tg.channelTok);
+  regID = new RegExp("" + tg.chatTok.join("|"), "gi");
+  chars = {
+		"_": "\\_",
+		"*": "\\*",
+		"[": "\\[",
+		"`": "\\`"
+	};
+	reChar = new RegExp("_|\\*|\\[|`", "gi");
+  event [dm] (u, m: "^!v", url) => {
+	  if m === "!v" then {
+		  batch_dm(u, "Пример: !v (о ком хотите что-то рассказать) сообщение. В скобках ник, кличка, паспорт, что хотите в общем связанное с кем либо, после сообщение через пробел. Скобки обязательны.\n!box(можно не в ЛС) - посмотреть, что наотправляли в коробку и как вообще это выглядит.");
+	  }
+	  else if m.match("\\(") then {
 	
-		msg = m.substring(3);
-		msg = msg.replace(reChar, m => chars[m]);
-		link = encodeURIComponent(url);
+		  msg = m.substring(3);
+		  msg = msg.replace(reChar, m => chars[m]);
 		
-		later 60000*rand(1, 17) tgChannel.telegram.sendMessage("-1001358047219", "*О ком:* " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n*⤷ Сплетня:*" + msg.substring(msg.indexOf(") ") + 1) + (if link then " [URL](" + link + ")" else ""), { parse_mode: "Markdown" });
-	  a.dm(u, "Что бы это ни было, оно сохранено.");
+		  later 60000*rand(1, 17) tgChannel.telegram.sendMessage("-1001358047219", "*О ком:* " + msg.substring(msg.indexOf("(") + 1, msg.indexOf(")")) + "\n*⤷ Сплетня:*" + msg.substring(msg.indexOf(") ") + 1) + (if url then " [URL](" + url + ")" else ""), { parse_mode: "Markdown" });
+	    a.dm(u, "Что бы это ни было, оно сохранено.");
+	  }
+  }
+	
+	event [dm] (u, m: "!greet", url, trip) => {
+		msg = m.substring(7);
+		nt = msg.substring(msg.indexOf("(") + 1, msg.indexOf(")"));
+		ntRe = ntRe.replace(reChar, m => chars[m]);
+		
+		if m.match("-h") then 
+		  batch_dm(u, "Добавляет приветствие для себя или же для кого другого, флаг вам в руки как говорится. Пример: !greet (ник или #трип, трип всегда с решеткой) добро пожаловать. Вывод: @ник, добро пожаловать. Скобочки обязательны и можно с пикчей, если хочется.");
+		else if m.match("\\(") then {
+			if !Object.keys(greet).includes(nt) then {
+				if url then {
+					greet[nt] = { 
+					  text: msg.substring(msg.indexOf(")") + 2),
+						url: url
+					};
+				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
+		        console.log("Приветствие сохранено.");
+	        });
+				  a.dm(u, "Приветствие сохранено.");
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, сохранено.", { parse_mode: "Markdown" });
+				}
+				else {
+				  greet[nt] = {
+						text: msg.substring(msg.indexOf(")") + 2)
+					};
+				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
+		        console.log("Приветствие сохранено.");
+	        });
+				  a.dm(u, "Приветствие сохранено.");
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, сохранено.", { parse_mode: "Markdown" });
+				}
+			}
+			else {
+				if url then {
+					greet[nt] = { 
+					  text: msg.substring(msg.indexOf(")") + 2),
+						url: url
+					};
+				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
+		        console.log("Приветствие перезаписано.");
+	        });
+				  a.dm(u, "Приветствие перезаписано.");
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, перезаписано.", { parse_mode: "Markdown" });
+				}
+				else {
+				  greet[nt] = {
+						text: msg.substring(msg.indexOf(")") + 2)
+					};
+				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
+		        console.log("Приветствие перезаписано.");
+	        });
+				  a.dm(u, "Приветствие перезаписано.");
+					tgChannel.telegram.sendMessage("-1001358047219", "Приветствие для - *" + ntRe "*, перезаписано.", { parse_mode: "Markdown" });
+				}
+			}
+		}
 	}
-}
 
-tgBot.start(ctx => ctx.reply("Добро пожаловать c:"));
-tgBot.command("dm", ctx => {
-	mTgText = ctx.message.text.substring(ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
-	mTgName = ctx.message.text.substring(ctx.message.text.indexOf(" ") + 1, ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
-	mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
-	if JSON.stringify(ctx.message.chat.id).match(regID)
-	  then {
-	    a.dm(mTgName, mTgText.replace(mTgLink, ""), (if mTgLink.match("http|https") then mTgLink else ""))
-		}
-});
-tgBot.command("kick", ctx => {
-	mTg = ctx.message.text.replace("/kick ", "");
-	if JSON.stringify(ctx.message.chat.id).match(regID)
-	  then {
-      a.kick(mTg);
-			tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет нах."));
-		}
-});
-tgBot.command("ban", ctx => {
-	mTg = ctx.message.text.replace("/ban ", "");
-	if JSON.stringify(ctx.message.chat.id).match(regID)
-	  then {
-	    a.ban(mTg);
-			tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет в далекую писдень."));
-		}
-});
-tgBot.command("unban", ctx => {
-	mTg = ctx.message.text.replace("/unban ", "");
-	if JSON.stringify(ctx.message.chat.id).match(regID)
-	  then {
-	    a.unban(mTg);
-			tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " оправдан."));
-		}
-});
-tgBot.on("text", ctx => {
-	mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
-	mTg = ctx.message.text;
-	if JSON.stringify(ctx.message.chat.id).match(regID)
-	  then {
-			rep = {};
-			rep[tg.chatTok[0]] = "Каору:\n⤷";
-			rep[tg.chatTok[1]] = "Кроль:\n⤷";
+  tgBot.start(ctx => ctx.reply("Добро пожаловать c:"));
+	
+  tgBot.command("dm", ctx => {
+	  mTgText = ctx.message.text.substring(ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
+	  mTgName = ctx.message.text.substring(ctx.message.text.indexOf(" ") + 1, ctx.message.text.indexOf(" ", ctx.message.text.indexOf(" ") + 1));
+	  mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
+	  if JSON.stringify(ctx.message.chat.id).match(regID)
+	    then {
+	      a.dm(mTgName, mTgText.replace(mTgLink, ""), (if mTgLink.match("http|https") then mTgLink else ""))
+		  }
+  });
+	
+  tgBot.command("kick", ctx => {
+	  mTg = ctx.message.text.replace("/kick ", "");
+	  if JSON.stringify(ctx.message.chat.id).match(regID)
+	    then {
+        a.kick(mTg);
+			  tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет нах."));
+		  }
+  });
+	
+  tgBot.command("ban", ctx => {
+	  mTg = ctx.message.text.replace("/ban ", "");
+	  if JSON.stringify(ctx.message.chat.id).match(regID)
+	    then {
+	      a.ban(mTg);
+			  tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " идет в далекую писдень."));
+		  }
+  });
+	
+  tgBot.command("unban", ctx => {
+	  mTg = ctx.message.text.replace("/unban ", "");
+	  if JSON.stringify(ctx.message.chat.id).match(regID)
+	    then {
+	      a.unban(mTg);
+			  tg.chatTok.forEach(id => ctx.telegram.sendMessage(id, mTg + " оправдан."));
+		  }
+  });
+	
+  tgBot.on("text", ctx => {
+	  mTgLink = ctx.message.text.substring(ctx.message.text.search("http|https"));
+	  mTg = ctx.message.text;
+	  if JSON.stringify(ctx.message.chat.id).match(regID)
+	    then {
+			  rep = {};
+			  rep[tg.chatTok[0]] = "Каору:\n⤷";
+			  rep[tg.chatTok[1]] = "Кроль:\n⤷";
 			
-			ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)] + " " + mTg + (if mTgLink.match("http|https") then " [URL](" + mTgLink + ")" else ""));
-			a.print((if !mTg.replace(mTgLink, "") then mTg else mTg.replace(mTgLink, "")), (if mTgLink.match("http|https") then mTgLink else ""));
-		}
-});
-tgBot.on("sticker", ctx => {
-	if JSON.stringify(ctx.message.chat.id).match(regID)
-	  then {
-			rep = {};
-			rep[tg.chatTok[0]] = "Каору:";
-			rep[tg.chatTok[1]] = "Кроль:";
+			  ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)] + " " + mTg + (if mTgLink.match("http|https") then " [URL](" + mTgLink + ")" else ""));
+			  a.print((if !mTg.replace(mTgLink, "") then mTg else mTg.replace(mTgLink, "")), (if mTgLink.match("http|https") then mTgLink else ""));
+		  }
+  });
+	
+  tgBot.on("sticker", ctx => {
+	  if JSON.stringify(ctx.message.chat.id).match(regID)
+	    then {
+			  rep = {};
+			  rep[tg.chatTok[0]] = "Каору:";
+			  rep[tg.chatTok[1]] = "Кроль:";
 			
-	    ctx.reply("Отправка...");
-	    file_id = ctx.message.sticker.file_id;
-	    ctx.telegram.getFileLink(file_id).then(x => {
-	      StickCon(x.href, link => {
-					if link !== "error" then {
-			      a.print("Стикер:", link, () => {
-			        ctx.reply("Стикер отправлен.");
-					    ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)]);
-			        ctx.telegram.sendSticker((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), file_id);
-			      });
-					}
-					else ctx.reply("Ошибка отправки.");
-		    })
-	    });
-		}
-});
-tgBot.launch();
-tgChannel.launch();
+	      ctx.reply("Отправка...");
+	      file_id = ctx.message.sticker.file_id;
+	      ctx.telegram.getFileLink(file_id).then(x => {
+	        StickCon(x.href, link => {
+					  if link !== "error" then {
+			        a.print("Стикер:", link, () => {
+			          ctx.reply("Стикер отправлен.");
+					      ctx.telegram.sendMessage((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), rep[JSON.stringify(ctx.message.chat.id)]);
+			          ctx.telegram.sendSticker((if ctx.message.chat.id == tg.chatTok[0] then tg.chatTok[1] else tg.chatTok[0]), file_id);
+			        });
+					  }
+					  else ctx.reply("Ошибка отправки.");
+		      })
+	      });
+		  }
+  });
+	
+  tgBot.launch();
+  tgChannel.launch();
 
 //-------------------TELEGRAM-------------------↑
 
-event [msg, dm] (u, m: "^!h") => {
-  batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!say(в ЛС) - C:\n⤷!v(в ЛС) - сплетница.\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
-}
+  event [msg, dm] (u, m: "^!h") => {
+    batch_dm(u, "Команды:\n⤷!zod 'знак' - гороскоп по зодиаку.\n⤷!у 'исполнитель - название' - музыкa с ютуба.\n⤷!list - 5 найденных песен по результатам последнего поиска.\n⤷!taro - узнать о мыслях и эмоциях человека по отношению к вам.\n⤷!say(в ЛС) - C:\n⤷!v(в ЛС) - сплетница.\n⤷!greet - приветствия, подробнее !greet -h.\n⤷!p 'сообщение' - предложка своих идей.\n⤷!upd - последнее обновление.");
+  }
 
-event [msg, dm] (u, m: "^!upd") => {
-	a.print("v2.3\n⤷Удалено то, что не юзалось.");
-}
+  event [msg, dm] (u, m: "^!upd") => {
+	  a.print("v2.4\n⤷Добавлены приветствия, подробнее !greet -h.");
+  }
 
-event [dm, msg] (u, m: "^!box") => {
-  a.print("Ссылка на письмена:", "https://t.me/joinchat/Mqu-vA03JMoxODNi");
-}
+  event [dm, msg] (u, m: "^!box") => {
+    a.print("Ссылка на письмена:", "https://t.me/joinchat/Mqu-vA03JMoxODNi");
+  }
+	
+  event [dm] (u, m: "^!p") => {
+	  if !Object.keys(pred).includes(u) then {
+	    pred[u].push(m.substring(3));
+		  fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
+		    console.log("+1 предложение.".green);
+			  a.dm(u, "Ваше сообщение сохранено.");
+	    });
+	  }
+	  else {
+		  pred[u] = [m.substring(3)];
+		  fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
+		    console.log("+1 предложение.".green);
+			  a.dm(u, "+1 к вашим сообщениям.");
+	    });
+	  }
+  }
 
-event [dm] (u, m: "^!p") => {
-	if !Object.keys(pred).includes(u) then {
-	  pred[u].push(m.substring(3));
-		fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
-		  console.log("+1 предложение.".green);
-			a.dm(u, "Ваше сообщение сохранено.");
-	  });
-	}
-	else {
-		pred[u] = [m.substring(3)];
-		fs.writeFile("./saves/p.json", JSON.stringify(pred), () => {
-		  console.log("+1 предложение.".green);
-			a.dm(u, "+1 к вашим сообщениям.");
-	  });
-	}
-}
-
-event [msg, me] (u, m: "!y") => {
+  event [msg, me] (u, m: "!y") => {
 		ytText = "";
 		
 		reLink = new RegExp("\\?v=|be/", "gi");
@@ -459,174 +526,172 @@ event [msg, me] (u, m: "!y") => {
 			  });
 		  });
     }
-}
-
-event [msg, me] (u, m: "^!list") => {
-  num = m.substring(6);
-  if m.match("^!list$") then
-    batch_print("Пять песен по результатам последнего поиска:" + (if ytText.length > 0 then { return ytText } else { listText(0) }) + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
-  else if (num < 1 || num > 5) then
-    a.print("Такого числа нет в списке.");
-  else if num.match("^\\d$") then {
-    ytLink(ytList[m.substring(6)][2], resp => {
-			ythuyut(resp);
-    });
   }
-}
 
-event msg (u, m: "^!zod") => {
+  event [msg, me] (u, m: "^!list") => {
+    num = m.substring(6);
+    if m.match("^!list$") then
+      batch_print("Пять песен по результатам последнего поиска:" + (if ytText.length > 0 then { return ytText } else { listText(0) }) + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
+    else if (num < 1 || num > 5) then
+      a.print("Такого числа нет в списке.");
+    else if num.match("^\\d$") then {
+      ytLink(ytList[m.substring(6)][2], resp => {
+			  ythuyut(resp);
+      });
+    }
+  }
+
+  event msg (u, m: "^!zod") => {
 	
-  if zodSwitch == true then {
-    zodSwitch = false;
-    taroSwitch = false;
+    if zodSwitch == true then {
+      zodSwitch = false;
+      taroSwitch = false;
 
-    if m.match("[Рр][Ыы][Бб][Ыы]|[Pp][Ii][Ss][Cc][Ee][Ss]") then
-    zodiac("pisces", x => batch_print(x, "pisces", () => {
-        catcherZ = "Рыбы:";
-      }));
-    else if m.match("[Оо][Вв][Ее][Нн]|[Aa][Rr][Ii][Ee][Ss]") then
-    zodiac("aries", x => batch_print(x, "aries", () => {
-        catcherZ = "Овен:";
-      }));
-    else if m.match("[Тт][Ее][Лл][Ее][Цц]|[Tt][Aa][Uu][Rr][Uu][Ss]") then
-    zodiac("taurus", x => batch_print(x, "taurus", () => {
-        catcherZ = "Телец:";
-      }));
-    else if m.match("[Бб][Лл][Ии][Зз][Нн][Ее][Цц][Ыы]|[Gg][Ee][Mm][Ii][Nn][Ii]") then
-    zodiac("gemini", x => batch_print(x, "gemini", () => {
-        catcherZ = "Близнецы:";
-      }));
-    else if m.match("[Рр][Аа][Кк]|[Cc][Aa][Nn][Cc][Ee][Rr]") then
-    zodiac("cancer", x => batch_print(x, "cancer", () => {
-        catcherZ = "Рак:";
-      }));
-    else if m.match("[Лл][Ее][Вв]|[Ll][Ee][Oo]") then
-    zodiac("leo", x => batch_print(x, "leo", () => {
-        catcherZ = "Лев:";
-      }));
-    else if m.match("[Дд][Ее][Вв][Аа]|[Vv][Ii][Rr][Gg][Oo]") then
-    zodiac("virgo", x => batch_print(x, "virgo", () => {
-        catcherZ = "Дева:";
-      }));
-    else if m.match("[Вв][Ее][Сс][Ыы]|[Ll][Ii][Bb][Rr][Aa]") then
-    zodiac("libra", x => batch_print(x, "libra", () => {
-        catcherZ = "Весы:";
-      }));
-    else if m.match("[Сс][Кк][Оо][Рр][Пп][Ии][Оо][Нн]|[Ss][Cc][Oo][Rr][Pp][Ii][Oo]") then
-    zodiac("scorpio", x => batch_print(x, "scorpio", () => {
-        catcherZ = "Скорпион:";
-      }));
-    else if m.match("[Сс][Тт][Рр][Ее][Лл][Ее][Цц]|[Ss][Aa][Gg][Ii][Tt][Tt][Aa][Rr][Ii][Uu][Ss]") then
-    zodiac("sagittarius", x => batch_print(x, "sagittarius", () => {
-        catcherZ = "Стрелец:";
-      }));
-    else if m.match("[Кк][Оо][Зз][Ее][Рр][Оо][Гг]|[Cc][Aa][Pp][Rr][Ii][Cc][Oo][Rr][Nn]") then
-    zodiac("capricorn", x => batch_print(x, "capricorn", () => {
-        catcherZ = "Козерог:";
-      }));
-    else if m.match("[Вв][Оо][Дд][Оо][Лл][Ее][Йй]|[Aa][Qq][Uu][Aa][Rr][Ii][Uu][Ss]") then
-    zodiac("aquarius", x => batch_print(x, "aquarius", () => {
-        catcherZ = "Водолей:";
-      }));
-		else {
-			zodSwitch = true;
-      taroSwitch = true;
-		}
+      if m.match("[Рр][Ыы][Бб][Ыы]|[Pp][Ii][Ss][Cc][Ee][Ss]") then
+        zodiac("pisces", x => batch_print(x, "pisces", () => {
+          catcherZ = "Рыбы:";
+        }));
+      else if m.match("[Оо][Вв][Ее][Нн]|[Aa][Rr][Ii][Ee][Ss]") then
+        zodiac("aries", x => batch_print(x, "aries", () => {
+          catcherZ = "Овен:";
+        }));
+      else if m.match("[Тт][Ее][Лл][Ее][Цц]|[Tt][Aa][Uu][Rr][Uu][Ss]") then
+        zodiac("taurus", x => batch_print(x, "taurus", () => {
+          catcherZ = "Телец:";
+        }));
+      else if m.match("[Бб][Лл][Ии][Зз][Нн][Ее][Цц][Ыы]|[Gg][Ee][Mm][Ii][Nn][Ii]") then
+        zodiac("gemini", x => batch_print(x, "gemini", () => {
+          catcherZ = "Близнецы:";
+        }));
+      else if m.match("[Рр][Аа][Кк]|[Cc][Aa][Nn][Cc][Ee][Rr]") then
+        zodiac("cancer", x => batch_print(x, "cancer", () => {
+          catcherZ = "Рак:";
+        }));
+      else if m.match("[Лл][Ее][Вв]|[Ll][Ee][Oo]") then
+        zodiac("leo", x => batch_print(x, "leo", () => {
+          catcherZ = "Лев:";
+        }));
+      else if m.match("[Дд][Ее][Вв][Аа]|[Vv][Ii][Rr][Gg][Oo]") then
+        zodiac("virgo", x => batch_print(x, "virgo", () => {
+          catcherZ = "Дева:";
+        }));
+      else if m.match("[Вв][Ее][Сс][Ыы]|[Ll][Ii][Bb][Rr][Aa]") then
+        zodiac("libra", x => batch_print(x, "libra", () => {
+          catcherZ = "Весы:";
+        }));
+      else if m.match("[Сс][Кк][Оо][Рр][Пп][Ии][Оо][Нн]|[Ss][Cc][Oo][Rr][Pp][Ii][Oo]") then
+        zodiac("scorpio", x => batch_print(x, "scorpio", () => {
+          catcherZ = "Скорпион:";
+        }));
+      else if m.match("[Сс][Тт][Рр][Ее][Лл][Ее][Цц]|[Ss][Aa][Gg][Ii][Tt][Tt][Aa][Rr][Ii][Uu][Ss]") then
+        zodiac("sagittarius", x => batch_print(x, "sagittarius", () => {
+          catcherZ = "Стрелец:";
+        }));
+      else if m.match("[Кк][Оо][Зз][Ее][Рр][Оо][Гг]|[Cc][Aa][Pp][Rr][Ii][Cc][Oo][Rr][Nn]") then
+        zodiac("capricorn", x => batch_print(x, "capricorn", () => {
+          catcherZ = "Козерог:";
+        }));
+      else if m.match("[Вв][Оо][Дд][Оо][Лл][Ее][Йй]|[Aa][Qq][Uu][Aa][Rr][Ii][Uu][Ss]") then
+        zodiac("aquarius", x => batch_print(x, "aquarius", () => {
+          catcherZ = "Водолей:";
+        }));
+		  else {
+			  zodSwitch = true;
+        taroSwitch = true;
+		  }
+    }
   }
-}
 
-event msg (u, m: "^!taro") => {
+  event msg (u, m: "^!taro") => {
 
-  if taroSwitch == true then {
-    zodSwitch = false;
-    taroSwitch = false;
+    if taroSwitch == true then {
+      zodSwitch = false;
+      taroSwitch = false;
 
-    a.getLoc(() => {
-      user = a.users.find(
+      a.getLoc(() => {
+        user = a.users.find(
           user => user.name === u)
 
-      if user.tripcode then {
-        if names.includes(user.tripcode) then {
+        if user.tripcode then {
+          if names.includes(user.tripcode) then {
+            a.print("@" + u + " ты сегодня уже гадал(a), хватит с тебя.");
+            zodSwitch = true;
+            taroSwitch = true;
+          }
+          else {
+            names.push(user.tripcode);
+            taro(x => Taro = x);
+            tarFunc(u);
+          }
+        }
+        else if names.includes(u) then {
           a.print("@" + u + " ты сегодня уже гадал(a), хватит с тебя.");
           zodSwitch = true;
           taroSwitch = true;
         }
         else {
-          names.push(user.tripcode);
+          names.push(u);
           taro(x => Taro = x);
           tarFunc(u);
         }
-      }
-      else if names.includes(u) then {
-        a.print("@" + u + " ты сегодня уже гадал(a), хватит с тебя.");
-        zodSwitch = true;
-        taroSwitch = true;
-      }
-      else {
-        names.push(u);
-        taro(x => Taro = x);
-        tarFunc(u);
-      }
-    })
+      })
+    }
   }
-}
 
-event dm (u, m: "^!say") => {
-	if !m.match("/leave") then
-	  a.print(m.substring(5));
-}
+  event dm (u, m: "^!say") => {
+	  if !m.match("/leave") then
+	    a.print(m.substring(5));
+  }
 
-event join (u, m, url, trip) => {
-	if trip === "Leu5XTRpi6" then
-		a.handOver(u);
-}
+  event join (u, m, url, trip) => {
+	  if trip === "Leu5XTRpi6" then
+		  a.handOver(u);
+		else if trip then {
+			Object.keys(greet).find(name => {
+				if name === ("#" + trip) then {
+					a.print("@" + u + ", " + greet["#" + trip].text, (if greet["#" + trip].url then greet["#" + trip].url else ""));
+				}
+			});
+		}
+		else {
+			Object.keys(greet).find(name => {
+				if name === (u) then {
+					a.print("@" + u + ", " + greet[u].text, (if greet[u].url then greet[u].url else ""));
+				}
+			});
+		}
+  }
 
 //-------------------LOGS-------------------↓
 
-log2mkd = (type, e) => {
-	chars = {
-		"_": "\\_",
-		"*": "\\*",
-		"[": "\\[",
-		"`": "\\`"
-	}
-	reChar = new RegExp("_|\\*|\\[|`", "gi");
-	e.user = e.user.replace(reChar, m => chars[m]);
-	e.text = e.text.replace(reChar, m => chars[m]);
+  log2mkd = (type, e) => {
+		
+	  chars = {
+		  "_": "\\_",
+		  "*": "\\*",
+		  "[": "\\[",
+		  "`": "\\`"
+	  }
+		
+	  reChar = new RegExp("_|\\*|\\[|`", "gi");
+	  e.user = e.user.replace(reChar, m => chars[m]);
+	  e.text = e.text.replace(reChar, m => chars[m]);
 	
-  if(type === "msg")
-    then "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
-  else if(type === "me")
-    then "Действие | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: _") else ": _") + e.text + "_" + (if e.url then " [URL](" + e.url + ")" else "");
-  else if(type === "dm")
-    then "ЛС | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
-  else if(type === "join")
-    then e.user + (if e.trip then ("`#" + e.trip + "` в чате.") else " в чате.");
-  else if(type === "leave")
-    then e.user + (if e.trip then ("`#" + e.trip + "` покинул(а) чат.") else " покинул(а) чат.");
-}
+    if(type === "msg")
+      then "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
+    else if(type === "me")
+      then "Действие | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: _") else ": _") + e.text + "_" + (if e.url then " [URL](" + e.url + ")" else "");
+    else if(type === "dm")
+      then "ЛС | " + "*" + e.user + "*" + (if e.trip then ("`#" + e.trip + "`: ") else ": ") + e.text + (if e.url then " [URL](" + e.url + ")" else "");
+    else if(type === "join")
+      then e.user + (if e.trip then ("`#" + e.trip + "` в чате.") else " в чате.");
+    else if(type === "leave")
+      then e.user + (if e.trip then ("`#" + e.trip + "` покинул(а) чат.") else " покинул(а) чат.");
+  }
 
-sendTg = (token, chat_id, type, e) => {
+  sendTg = (token, chat_id, type, e) => {
 	
-	if e.text.match("^!v") then {
-		axios({
-	    "method": "POST",
-		  "url": "https://api.telegram.org/bot" + token + "/sendMessage",
-		  "headers": {
-			  "dataType": "json",
-		  },
-		  "data": {
-        "chat_id": chat_id[0],
-        "text": log2mkd(type, e),
-			  "parse_mode": "Markdown",
-        "disable_web_page_preview": false,
-		  }
-	  }).catch(err => {
-	    console.log("failed:", err.response.data);
-    });
-	}
-	else {
-		chat_id.forEach(chat_ID => {
+	  if e.text.match("^!v") then {
 		  axios({
 	      "method": "POST",
 		    "url": "https://api.telegram.org/bot" + token + "/sendMessage",
@@ -634,7 +699,7 @@ sendTg = (token, chat_id, type, e) => {
 			    "dataType": "json",
 		    },
 		    "data": {
-          "chat_id": chat_ID,
+          "chat_id": chat_id[0],
           "text": log2mkd(type, e),
 			    "parse_mode": "Markdown",
           "disable_web_page_preview": false,
@@ -642,31 +707,49 @@ sendTg = (token, chat_id, type, e) => {
 	    }).catch(err => {
 	      console.log("failed:", err.response.data);
       });
-    })
-	}
-}
+	  }
+	  else {
+		  chat_id.forEach(chat_ID => {
+		    axios({
+	        "method": "POST",
+		      "url": "https://api.telegram.org/bot" + token + "/sendMessage",
+		      "headers": {
+			      "dataType": "json",
+		      },
+		      "data": {
+            "chat_id": chat_ID,
+            "text": log2mkd(type, e),
+			      "parse_mode": "Markdown",
+            "disable_web_page_preview": false,
+		      }
+	      }).catch(err => {
+	        console.log("failed:", err.response.data);
+        });
+      })
+	  }
+  }
 	
-event [msg, dm, me, join, leave] (u, m, url, trip, eventObject) => {
-	if u !== a.profile.name then {
-		sendTg(tg.botTok, tg.chatTok, eventObject.type, eventObject);
+  event [msg, dm, me, join, leave] (u, m, url, trip, eventObject) => {
+	  if u !== a.profile.name then {
+		  sendTg(tg.botTok, tg.chatTok, eventObject.type, eventObject);
 		
-		if eventObject.type === "msg" then console.log(u.cyan + ": ".yellow + m.yellow);
-	  else if eventObject.type === "dm" then console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
-	  else if eventObject.type === "me" then console.log("Действие(".yellow + u.cyan + "): ".yellow + m.yellow);
-	  else if eventObject.type === "join" then console.log("\" ".underline.gray + u.underline.gray + " \" в чате.".underline.gray);
-	  else if eventObject.type === "leave" then console.log("\" ".underline.gray + u.underline.gray + " \" покинул(а) чат.".underline.gray);
-	}
-	else {
-		if m.match(catcherZ) then {
-		  zodSwitch = true;
-			taroSwitch = true;
-		}
-		else if m.match(catcherT) then {
-			taroSwitch = true;
-			zodSwitch = true;
-		}
-	}
-}
+		  if eventObject.type === "msg" then console.log(u.cyan + ": ".yellow + m.yellow);
+	    else if eventObject.type === "dm" then console.log("ЛС(".yellow + u.cyan + "): ".yellow + m.yellow);
+	    else if eventObject.type === "me" then console.log("Действие(".yellow + u.cyan + "): ".yellow + m.yellow);
+	    else if eventObject.type === "join" then console.log("\" ".underline.gray + u.underline.gray + " \" в чате.".underline.gray);
+	    else if eventObject.type === "leave" then console.log("\" ".underline.gray + u.underline.gray + " \" покинул(а) чат.".underline.gray);
+	  }
+	  else {
+		  if m.match(catcherZ) then {
+		    zodSwitch = true;
+			  taroSwitch = true;
+		  }
+		  else if m.match(catcherT) then {
+			  taroSwitch = true;
+			  zodSwitch = true;
+		  }
+	  }
+  }
 //-------------------LOGS-------------------↑
 
 }
@@ -681,8 +764,8 @@ BotLogin = () => {
 			a.getLoc(() => {
 			  if a.room.roomId == roomchik then {
 				  console.log("bot loaded");
-				  if a.room.description !== "night | !h - инфа по командам | Появилась функция сплетницы, подробнее о ней - !v(в ЛС боту) v2.3" then {
-					  a.descr("night | !h - инфа по командам | Появилась функция сплетницы, подробнее о ней - !v(в ЛС боту) v2.3");
+				  if a.room.description !== "night | !h - инфа по командам | !greet -h v2.4" then {
+					  a.descr("night | !h - инфа по командам | !greet -h v2.4");
 					  going beginBot;
 				  }
 				  else going beginBot;
