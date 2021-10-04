@@ -334,16 +334,17 @@ state beginBot {
 	event [dm] (u, m: "!greet", url, trip) => {
 		msg = m.substring(7);
 		nt = msg.substring(msg.indexOf("(") + 1, msg.indexOf(")"));
-		ntRe = ntRe.replace(reChar, m => chars[m]);
+		ntRe = nt.replace(reChar, m => chars[m]);
+    link = url;
 		
 		if m.match("-h") then 
 		  batch_dm(u, "Добавляет приветствие для себя или же для кого другого, флаг вам в руки как говорится. Пример: !greet (ник или #трип, трип всегда с решеткой) добро пожаловать. Вывод: @ник, добро пожаловать. Скобочки обязательны и можно с пикчей, если хочется.");
 		else if m.match("\\(") then {
 			if !Object.keys(greet).includes(nt) then {
-				if url then {
+				if link then {
 					greet[nt] = { 
 					  text: msg.substring(msg.indexOf(")") + 2),
-						url: url
+						url: link
 					};
 				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
 		        console.log("Приветствие сохранено.");
@@ -363,10 +364,10 @@ state beginBot {
 				}
 			}
 			else {
-				if url then {
+				if link then {
 					greet[nt] = { 
 					  text: msg.substring(msg.indexOf(")") + 2),
-						url: url
+						url: link
 					};
 				  fs.writeFile("./saves/greet.json", JSON.stringify(greet), () => {
 		        console.log("Приветствие перезаписано.");
