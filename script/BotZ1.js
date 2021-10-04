@@ -9,7 +9,7 @@ if (!JSON.parse(fs.readFileSync("./saves/p.json", "utf8"))) then {
 }
 else pred = JSON.parse(fs.readFileSync("./saves/p.json", "utf8"));
 if (!JSON.parse(fs.readFileSync("./saves/greet.json", "utf8"))) then {
-	greet = {};
+  greet = {};
 }
 else greet = JSON.parse(fs.readFileSync("./saves/greet.json", "utf8"));
 
