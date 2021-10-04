@@ -8,7 +8,7 @@ if (!JSON.parse(fs.readFileSync("./saves/p.json", "utf8"))) then {
   pred = {};
 }
 else pred = JSON.parse(fs.readFileSync("./saves/p.json", "utf8"));
-if !JSON.parse(fs.readFileSync("./saves/greet.json", "utf8")) then {
+if (!JSON.parse(fs.readFileSync("./saves/greet.json", "utf8"))) then {
 	greet = {};
 }
 else greet = JSON.parse(fs.readFileSync("./saves/greet.json", "utf8"));
@@ -77,7 +77,7 @@ upZod = () => {
   }
 }
 
-if !JSON.parse(fs.readFileSync("./saves/zod.json", "utf8")) then {
+if (!JSON.parse(fs.readFileSync("./saves/zod.json", "utf8"))) then {
 	upZod();
   later 2000 fs.writeFile("./saves/zod.json", JSON.stringify(lucky), () => {
 		console.log("Зодиак записан.");
@@ -151,7 +151,7 @@ ytList = {};
 ytText = "";
 
 listText = (num) => {
-	if num < Object.keys(ytList).length then {
+	if (num < Object.keys(ytList).length) then {
 		num++;
 	  ytText = ytText + "\n⤷" + num + ": " + ytList[num][0] + " - " + ytList[num][1];
 		listText(num);
@@ -759,12 +759,12 @@ state beginBot {
 
 BotLogin = () => {
 
-  if a.load() then {
+  if (a.load()) then {
 	  a.join(roomchik, () => {
 			a.getLoc(() => {
-			  if a.room.roomId == roomchik then {
+			  if (a.room.roomId == roomchik) then {
 				  console.log("bot loaded");
-				  if a.room.description !== "night | !h - инфа по командам | !greet -h v2.4" then {
+				  if (a.room.description !== "night | !h - инфа по командам | !greet -h v2.4") then {
 					  a.descr("night | !h - инфа по командам | !greet -h v2.4");
 					  going beginBot;
 				  }
@@ -772,7 +772,7 @@ BotLogin = () => {
 			  }
 			  else later 5000 BotLogin();
 			})
-	  });
+	  })
   }
   else {
     a.login(() => {
@@ -780,8 +780,8 @@ BotLogin = () => {
 	    a.join(roomchik, () => {
 			  console.log("bot joined");
 				going beginBot;
-	    });
-    });
+	    })
+    })
   }
 }
 
@@ -790,4 +790,3 @@ a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 roomchik = "2jNEBMDj3E";
 
 BotLogin();
-//all
