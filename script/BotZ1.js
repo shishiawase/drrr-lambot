@@ -331,7 +331,7 @@ state beginBot {
 	  }
   }
 	
-	event [dm] (u, m: "!greet", url, trip) => {
+	event [dm, msg] (u, m: "!greet", url, trip) => {
 		msg = m.substring(7);
 		nt = msg.substring(msg.indexOf("(") + 1, msg.indexOf(")"));
 		ntRe = nt.replace(reChar, m => chars[m]);
