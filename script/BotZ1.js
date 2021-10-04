@@ -790,3 +790,4 @@ a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 roomchik = "AQ2XaYZ2Uq";
 
 BotLogin();
+//all
