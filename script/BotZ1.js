@@ -161,7 +161,7 @@ listText = (num) => {
 
 ytLink = (id, call) => {
 
-  axios("https://api.allorigins.win/raw?url=http://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v=" + id)
+  axios("https://api.allorigins.win/raw?url=https://youtube.michaelbelgium.me/api/converter/convert?api_token=E67btg2VDpEWax1HhwXJmfTH51bKM4PKESfnncSIJcQOzsyIqixkjURVgykf&url=https://www.youtube.com/watch?v=" + id)
     .then(resp => {
 
       call(resp);
