@@ -791,6 +791,6 @@ BotLogin = () => {
 
 a = new Bot(__this__, "Астролог", "gg", "ru-RU", "Tv")
 
-roomchik = "gJGmQ69Zzo";
+roomchik = "2jNEBMDj3E";
 
 BotLogin();
