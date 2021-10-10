@@ -161,16 +161,22 @@ listText = (num) => {
 
 ytLink = (id, call) => {
 
-  axios("https://api.allorigins.win/raw?url=https://youtube.michaelbelgium.me/api/converter/convert?api_token=E67btg2VDpEWax1HhwXJmfTH51bKM4PKESfnncSIJcQOzsyIqixkjURVgykf&url=https://www.youtube.com/watch?v=" + id)
-    .then(resp => {
-
+  axios({
+      "method": "POST",
+      "url": "https://youtube.michaelbelgium.me/api/converter/convert",
+      "headers": {
+          'Authorization': 'Bearer fNxuptaqxVdpAngOdlvKa6YXoFHMk1n71yG89aSBcX3tDGYIx7V9IbDvGjzZ'
+      },
+      "data": {
+          "url": "https://www.youtube.com/watch?v=" + id
+      }
+  }).then(resp => {
       call(resp);
-
-    }).catch( err => {
+  }).catch( err => {
       console.log(err.response.status + " - " + err.response.statusText);
       a.print("Запрос не прошел, повторите еще раз.");
       call("no");
-    })
+  })
 }
 
 ythuyut = (resp) => {
@@ -495,8 +501,7 @@ state beginBot {
   }
 
   event [msg, me] (u, m: "!y") => {
-      a.print("Временно отключено.")
-    /*ytText = "";
+    ytText = "";
 
     reLink = new RegExp("\\?v=|be/", "gi");
     reY = new RegExp("!y\\s|\\s!y", "gi");
@@ -522,12 +527,11 @@ state beginBot {
           ythuyut(data);
         });
       });
-  }*/
+    }
   }
 
   event [msg, me] (u, m: "^!list") => {
-      a.print("Временно отключено.")
-    /*num = m.substring(6);
+    num = m.substring(6);
     if (m.match("^!list$")) then {
       batch_print("Пять песен по результатам последнего поиска:" + (if ytText.length > 0 then { return ytText } else { listText(0) }) + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
     }
@@ -538,7 +542,7 @@ state beginBot {
       ytLink(ytList[m.substring(6)][2], resp => {
         ythuyut(resp);
       });
-  }*/
+    }
   }
 
   event msg (u, m: "^!zod") => {
