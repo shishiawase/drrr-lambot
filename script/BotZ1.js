@@ -495,7 +495,8 @@ state beginBot {
   }
 
   event [msg, me] (u, m: "!y") => {
-    ytText = "";
+      a.print("Временно отключено.")
+    /*ytText = "";
 
     reLink = new RegExp("\\?v=|be/", "gi");
     reY = new RegExp("!y\\s|\\s!y", "gi");
@@ -521,11 +522,12 @@ state beginBot {
           ythuyut(data);
         });
       });
-    }
+  }*/
   }
 
   event [msg, me] (u, m: "^!list") => {
-    num = m.substring(6);
+      a.print("Временно отключено.")
+    /*num = m.substring(6);
     if (m.match("^!list$")) then {
       batch_print("Пять песен по результатам последнего поиска:" + (if ytText.length > 0 then { return ytText } else { listText(0) }) + ".\n\nЧтобы выбрать одну из них, введите: !list 'номер'", "music");
     }
@@ -536,7 +538,7 @@ state beginBot {
       ytLink(ytList[m.substring(6)][2], resp => {
         ythuyut(resp);
       });
-    }
+  }*/
   }
 
   event msg (u, m: "^!zod") => {
