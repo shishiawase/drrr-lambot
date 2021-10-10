@@ -176,7 +176,7 @@ ytLink = (id, call) => {
 ythuyut = (resp) => {
   if (resp !== "no") then {
     if (resp.data.error == true) then {
-      a.print("Длина трека больше 10 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
+      a.print("Длина трека больше 5 минут, выберите в !list другой или же просто добавьте по ссылке - !у 'ссылка'.");
     }
     else a.music(resp.data.title, resp.data.file);
   }
