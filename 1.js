@@ -1,3 +1,5 @@
+timer 60000*10 drrr.dm(drrr.profile.name, ".");
+
 event msg (u, m: "/m") => {
 	reY = new RegExp("/m\\s|\\s/m", "gi");
 
