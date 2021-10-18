@@ -1,6 +1,7 @@
 {
   "lockfileVersion": 1,
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^0.21.1",
     "catbox.moe": "^1.0.2",
     "colors": "^1.4.0",

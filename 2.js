@@ -1,6 +1,7 @@
 const yts = require('yt-search');
 const fs = require('fs');
 const cmd = require('node-cmd');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 
 let timesId = {};
 
@@ -13,12 +14,12 @@ globalThis.ytSearch = async (title, call) => {
 	if (videos[0].seconds > 600) {
 		call('duration');
 	} else {
-		cmd.run('yt-dlp -f \'ba\' -x --audio-format mp3 --ffmpeg-location \'./node_modules/@ffmpeg-installer/win32-x64/\' https://www.youtube.com/watch?v=' + videos[0].videoId + ' -o \'./music/%(id)s.mp3\'', (err, data, stderr) => {
+		cmd.run("yt-dlp -f \"ba\" -x --audio-format mp3 --ffmpeg-location " + ffmpegPath + " https://www.youtube.com/watch?v=" + videos[0].videoId + " -o \"./music/%(id)s.mp3\"", (err, data, stderr) => {
 			if (!err) {
 				let pathSong = './music/' + videos[0].videoId + '.mp3';
 
 				yt.title = videos[0].title;
-				yt.link = 'http://c177-129-159-247-225.ngrok.io/' + videos[0].videoId + '.mp3';
+				yt.link = 'http://67ad-46-191-138-212.ngrok.io/' + videos[0].videoId + '.mp3';
 
 				if (!Object.keys(timesId).includes(videos[0].videoId)) {
 					timesId[videos[0].videoId] = setTimeout(() => {
