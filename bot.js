@@ -3,6 +3,8 @@ const https = require('https');
 const querystring = require('querystring');
 const LS = require('./LambdaScript')
 
+https.globalAgent.keepAlive = true;
+
 const endpoint = "https://drrr.com";
 
 function fetch(url, [opts, body], callback){
@@ -95,6 +97,7 @@ class Bot {
     this.config = config || "config.json";
     this.exec_ctrl = false;
     this.ctrl_queue = [];
+    this.visitors = {}
 
     if(machine) {
       console.log("start listening...")
@@ -231,6 +234,9 @@ class Bot {
       this.room = json.room || false;
       this.users =
         (this.room && this.room.users) || false;
+      this.users && this.users.forEach(u => {
+        this.visitors[u.name] = u;
+      })
       callback && callback(json);
     });
   }
@@ -295,7 +301,7 @@ class Bot {
       let json = false;
       try { json = JSON.parse(res.text); }
       catch (err){ callback(false); }
-      if(json.users){
+      if(json && json.users){
         this.room = json;
         this.users = json.users;
       }
@@ -514,9 +520,10 @@ class Bot {
   }
 
   unban(name, callback){
-    let users = this.room.users || []
-    let u = users.find(x => x.name === name)
-    this.room_api({'unban': u.id}, callback);
+    let users = this.visitors || []
+    let u = this.visitors[name]
+    if(u) this.room_api({'unban': u.id, 'userName': u.name}, callback);
+    else callback(false);
   }
 
   // for werewolf room on drrr.com
