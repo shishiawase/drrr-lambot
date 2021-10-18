@@ -19,7 +19,7 @@ globalThis.ytSearch = async (title, call) => {
 				let pathSong = './music/' + videos[0].videoId + '.mp3';
 
 				yt.title = videos[0].title;
-				yt.link = 'http://67ad-46-191-138-212.ngrok.io/' + videos[0].videoId + '.mp3';
+				yt.link = 'http://9eba-129-159-247-225.ngrok.io/' + videos[0].videoId + '.mp3';
 
 				if (!Object.keys(timesId).includes(videos[0].videoId)) {
 					timesId[videos[0].videoId] = setTimeout(() => {
