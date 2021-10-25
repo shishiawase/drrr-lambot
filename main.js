@@ -1,3 +1,4 @@
+const cmd = require('node-cmd');
 const {Telegraf} = require('./node_modules/telegraf')
 const Catbox = require('./node_modules/catbox.moe')
 const axios = require('./node_modules/axios')
@@ -8,6 +9,7 @@ const repl = require('repl')
 const LS = require('./LambdaScript')
 const {Bot, listen} = require('./bot')
 
+global.cmd = cmd
 global.Telegraf = Telegraf
 global.fs = fs
 global.Catbox = Catbox
