@@ -6,10 +6,10 @@ magic = (num) => {
   users = [];
   
   a.getLounge((x) => {
-    if !x.message.match("Not Logined") {
+    if !x.message.match("Not Logined") then {
       a.rooms.forEach((room) => room.users.forEach((user) => users.push(user.name)));
     
-      a.create(users[Math.floor(Math.random() * users.length)], "", "1." + num, "ru-RU", false, false, false, () => {
+      a.create(users[Math.floor(Math.random() * users.length)], "", "2." + num, "ru-RU", false, false, false, () => {
         a.leave(() => magic(num));
       })
     }
