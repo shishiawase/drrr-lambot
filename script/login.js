@@ -1,4 +1,4 @@
-const bot = new Telegraf("2064104833:AAFMFd17IPxlIGPxSPLtCDaJO--zdy359nI");
+const bot = new Telegraf("tgtok");
 let drrr = {};
 let bans = [];
 let bansArray = [];
@@ -998,7 +998,7 @@ event [msg, dm, me, join, leave, new-host, room-profile, new-description, music]
                 }
             };
 
-            sendTg("2064104833:AAFMFd17IPxlIGPxSPLtCDaJO--zdy359nI", "330766323", eventObject.type, eventObject, room);
+            sendTg("tgtok", "tgchatid", eventObject.type, eventObject, room);
         })
 	}
 }
