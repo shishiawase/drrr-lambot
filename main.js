@@ -1,4 +1,4 @@
-const {Telegraf} = require('./node_modules/telegraf')
+const {Telegraf, Scenes, session} = require('./node_modules/telegraf')
 const Catbox = require('./node_modules/catbox.moe')
 const axios = require('./node_modules/axios')
 const colors = require('./node_modules/colors')
@@ -9,6 +9,8 @@ const LS = require('./LambdaScript')
 const {Bot, listen} = require('./bot')
 
 global.Telegraf = Telegraf
+global.Scenes = Scenes
+global.session = session
 global.fs = fs
 global.Catbox = Catbox
 global.axios = axios
