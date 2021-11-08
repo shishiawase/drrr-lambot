@@ -349,6 +349,15 @@ state StartBot {
       drrr.print("@" + u + ", добро пожаловать " + usersDB[u].Name + usersDB[u].Type + "~");
     }
   }
+// help
+  event [msg, dm] (u, m: "^!h", url, trip, evObj) => {
+    if (evObj.type === "msg") then {
+      drrr.print("!y [название] - музыка.\n!list - 5 найденных песен по последнему поиску(!list [цифра] - выбрать из списка).\n!all - все облики.\n!say - сказать за бота.");
+    }
+    else if (evObj.type === "dm") then {
+      drrr.dm(u, "!y [название] - музыка.\n!list - 5 найденных песен по последнему поиску(!list [цифра] - выбрать из списка).\n!all - все облики.\n!say - сказать за бота.");
+    }
+  }
 // Меняем название при выходе
   event [leave, kick, ban] (u) => {
     titleUpdate();
@@ -408,6 +417,12 @@ state StartBot {
       else if (evObj.type === "dm") then {
         drrr.dm(u, "Список пуст.");
       }
+    }
+  }
+// Говорить за бота
+  event [dm] (u, m: "!say") => {
+    if (!m.match("leave")) then {
+      drrr.print(m.substring(5));
     }
   }
 // Вся живность
