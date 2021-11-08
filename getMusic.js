@@ -47,13 +47,21 @@ getStart = (num, id) => {
             }
           }
           else if (m.match("^!ty")) then {
-            drrr[num].leave(() => {
-              delEv(num, id);
+            drrr[num].getLoc(() => {
+              drrr.rooms.find((room) => {
+                if (room.name === drrr[num].room.name) then {
+                  if (room.host.name === u) then {
+                    drrr[num].leave(() => {
+                      delEv(num, id);
+                    })
+                  }
+                }
+              })
             })
           }
         });
 
-        drrr[num].print("Команды:\n!yt название песни или ссылка с ютуба.\n!ty - бот сваливает(перед этим уберите в описании /getmusic или он придет снова)."); // description of functions at the entrance to the room
+        drrr[num].print("Команды:\n!yt название песни или ссылка с ютуба.\n!ty - бот сваливает(может только хост, перед этим уберите в описании /getmusic или он придет снова)."); // description of functions at the entrance to the room
       })
     })
   }
@@ -67,6 +75,7 @@ state Start {
   timer 60000 {
     finder.getLounge(() => {
       finder.rooms.forEach((room) => {
+
         if (room.language === "ru-RU") then {
           if (room.description.match("/getmusic")) then {
             if (room.users.length !== room.users.limit) then {
