@@ -485,7 +485,7 @@ console.log(x);
       }
       else if (x.error.match("not found")) then {
         console.log("Комната не найдена, создаем новую...");
-        drrr.create("✨", room.desc, "20", "ru-RU", true, false, true, () => {
+        drrr.create("✨", room.desc, "20", "ru-RU", true, false, false, () => {
           console.log("Комната пересоздана..");
           room.id = drrr.room.roomId;
           fs.writeFile("./saves/room.json", JSON.stringify(room), () => {
@@ -508,7 +508,7 @@ BotLogin = () => {
       drrr.save();
 
       if (room.id === false) then {
-        drrr.create("✨", room.desc, "20", "ru-RU", true, false, true, () => {
+        drrr.create("✨", room.desc, "20", "ru-RU", true, false, false, () => {
           console.log("Комната создана..");
           room.id = drrr.room.roomId;
           fs.writeFile("./saves/room.json", JSON.stringify(room), () => {
