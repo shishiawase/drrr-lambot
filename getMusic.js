@@ -82,9 +82,25 @@ state Start {
   }
 }
 
-finder = new Bot(__this__, "gg", "gg");
+timer 60000*15 {
+  if (!finder.profile) then {
+    tryLog();
+  }
+}
 
-finder.login(() => {
-  console.log("Finder started.");
-  going Start;
-});
+tryLog = () => {
+  finder = new Bot(__this__, "gg", "gg");
+
+  finder.login(() => {
+    console.log("Finder started.");
+
+    if (!finder.profile) then {
+      later 5000 tryLog();
+    }
+    else {
+      going Start;
+    }
+  })
+}
+
+tryLog();
