@@ -1,6 +1,10 @@
 rooms = [];
 drrr = {};
-times = {};
+finder = {};
+times = {
+  keep: {},
+  desc: {}
+};
 
 ytReg = new RegExp("^!yt\\s|\\s!yt$", "gi");
 // get music
@@ -36,7 +40,7 @@ getStart = (num, id) => {
       drrr[num].join(id, () => {
         console.log("MusicBot " + num + " join ok.");
 
-        times[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
+        times.keep[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
 
         drrr[num].event(["msg"], (u, m) => {
           if (m.match("!yt")) then {
@@ -46,22 +50,19 @@ getStart = (num, id) => {
               });
             }
           }
-          else if (m.match("^!ty")) then {
-            drrr[num].getLoc(() => {
-              drrr.rooms.find((room) => {
-                if (room.name === drrr[num].room.name) then {
-                  if (room.host.name === u) then {
-                    drrr[num].leave(() => {
-                      delEv(num, id);
-                    })
-                  }
-                }
-              })
-            })
-          }
         });
 
-        drrr[num].print("Команды:\n!yt название песни или ссылка с ютуба.\n!ty - бот сваливает(может только хост, перед этим уберите в описании /getmusic или он придет снова)."); // description of functions at the entrance to the room
+        drrr[num].event(["new-description"], (u) => {
+          drrr[num].getLoc(() => {
+            if (!drrr[num].room.name.match("/getmusic")) then {
+              drrr[num].leave(() => {
+                delEv(num, id);
+              })
+            }
+          })
+        });
+
+        drrr[num].print("!yt [название или ссылка с ютуба].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
       })
     })
   }
