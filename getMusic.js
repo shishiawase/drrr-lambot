@@ -22,6 +22,7 @@ delEv = (num, id) => {
       rooms.splice(ind, 1);
     }
   });
+  delete times[id];
   delete drrr[num];
   console.log("MusicBot " + num + " exit ok.");
 }
@@ -34,6 +35,8 @@ getStart = (num, id) => {
 
       drrr[num].join(id, () => {
         console.log("MusicBot " + num + " join ok.");
+
+        times[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
 
         drrr[num].event(["msg"], (u, m) => {
           if (m.match("!yt")) then {
