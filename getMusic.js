@@ -1,10 +1,7 @@
 rooms = [];
 drrr = {};
 finder = {};
-times = {
-  keep: {},
-  desc: {}
-};
+times = {};
 
 ytReg = new RegExp("^!yt\\s|\\s!yt$", "gi");
 // get music
@@ -40,9 +37,16 @@ getStart = (num, id) => {
       drrr[num].join(id, () => {
         console.log("MusicBot " + num + " join ok.");
 
-        times.keep[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
+        times[id] = setInterval(() => {
+          if (drrr[num].room.roomId) then {
+            drrr[num].dm("MusicBot", "keep");
+          }
+          else {
+            delEv(num, id);
+          }
+        }, 60000*10);
 
-        drrr[num].event(["msg"], (u, m) => {
+        drrr[num].event(["msg", "dm"], (u, m) => {
           if (m.match("!yt")) then {
             if (m.match(ytReg)) then {
               yt(m.replace(ytReg, ""), num, (y) => {
@@ -73,16 +77,24 @@ getStart = (num, id) => {
 }
 // looking for a room that needs music
 state Start {
-  timer 60000 {
+
+  timer 60000*15 {
+    if (!finder.profile) then {
+      going Reload;
+    }
+  }
+
+  timer 5000 {
     finder.getLounge(() => {
       finder.rooms.forEach((room) => {
-
         if (room.language === "ru-RU") then {
           if (room.description.match("/getmusic")) then {
             if (room.users.length !== room.users.limit) then {
               if (!rooms.includes(room.roomId)) then {
-                rooms.push(room.roomId);
-                getStart(1, room.roomId);
+                if (rooms.length !== 5) then {
+                  rooms.push(room.roomId);
+                  getStart(1, room.roomId);
+                }
               }
             }
           }
@@ -92,10 +104,8 @@ state Start {
   }
 }
 
-timer 60000*15 {
-  if (!finder.profile) then {
-    tryLog();
-  }
+state Reload {
+  tryLog();
 }
 
 tryLog = () => {
@@ -105,6 +115,7 @@ tryLog = () => {
     console.log("Finder started.");
 
     if (!finder.profile) then {
+      console.log("Profile undefined.")
       later 5000 tryLog();
     }
     else {
