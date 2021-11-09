@@ -24,6 +24,7 @@ delEv = (num, id) => {
         rooms.splice(ind, 1);
       }
     });
+    clearInterval(times[id]);
     delete times[id];
     delete drrr[num];
     console.log("MusicBot " + num + " exit ok.");
