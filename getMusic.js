@@ -18,14 +18,16 @@ yt = (req, num, call) => {
 }
 // deleting events and profile after exiting
 delEv = (num, id) => {
-  rooms.find((item, ind) => {
-    if (item === id) then {
-      rooms.splice(ind, 1);
-    }
-  });
-  delete times[id];
-  delete drrr[num];
-  console.log("MusicBot " + num + " exit ok.");
+  drrr[num].leave(() => {
+    rooms.find((item, ind) => {
+      if (item === id) then {
+        rooms.splice(ind, 1);
+      }
+    });
+    delete times[id];
+    delete drrr[num];
+    console.log("MusicBot " + num + " exit ok.");
+  })
 }
 // launches separate events for the room
 getStart = (num, id) => {
@@ -59,9 +61,20 @@ getStart = (num, id) => {
         drrr[num].event(["new-description"], (u) => {
           drrr[num].getLoc(() => {
             if (!drrr[num].room.name.match("/getmusic")) then {
-              drrr[num].leave(() => {
+              delEv(num, id);
+            }
+          })
+        });
+
+        drrr[num].event(["new-host"], (u, m, url, trip, e) => {
+          drrr[num].getLoc(() => {
+            if (e.user === drrr[num].profile.name) then {
+              if (drrr[num].users.length > 1) then {
+                drrr[num].handOver(drrr[num].users[Math.floor(Math.random() * drrr[num].users.length)].name);
+              }
+              else {
                 delEv(num, id);
-              })
+              }
             }
           })
         });
