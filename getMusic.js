@@ -3,7 +3,7 @@ drrr = {};
 finder = {};
 times = {};
 
-ytReg = new RegExp("^!yt\\s|\\s!yt$", "gi");
+ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
 // get music
 yt = (req, num, call) => {
   axios("http://astro-tyan.ejemplo.me/ytsearch?title=" + req)
@@ -50,7 +50,7 @@ getStart = (num, id) => {
         }, 60000*10);
 
         drrr[num].event(["msg", "dm"], (u, m) => {
-          if (m.match("!yt")) then {
+          if (m.match("/m")) then {
             if (m.match(ytReg)) then {
               yt(m.replace(ytReg, ""), num, (y) => {
                 drrr[num].music(y.title, y.link);
@@ -61,7 +61,7 @@ getStart = (num, id) => {
 
         drrr[num].event(["new-description"], (u) => {
           drrr[num].getLoc(() => {
-            if (!drrr[num].room.name.match("/getmusic")) then {
+            if (!drrr[num].room.description.match("/getmusic")) then {
               delEv(num, id);
             }
           })
@@ -80,7 +80,7 @@ getStart = (num, id) => {
           })
         });
 
-        drrr[num].print("!yt [название или ссылка с ютуба].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
+        drrr[num].print("/m [название или ссылка с YouTube].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
       })
     })
   }
