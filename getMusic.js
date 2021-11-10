@@ -6,10 +6,9 @@ times = {};
 ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
 // get music
 yt = (req, num, call) => {
-  url = "http://astro-tyan.ejemplo.me/ytsearch?title=" + req;
-  url = encodeURIComponent(url);
+  url = encodeURIComponent(req);
 
-  axios(url)
+  axios("http://astro-tyan.ejemplo.me/ytsearch?title=" + url)
     .then((res) => {
 
       call(res.data);
