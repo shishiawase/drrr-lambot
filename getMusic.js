@@ -7,7 +7,7 @@ ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
 // get music
 yt = (req, num, call) => {
   url = "http://astro-tyan.ejemplo.me/ytsearch?title=" + req;
-  url = encodURI(url);
+  url = encodeURIComponent(url);
 
   axios(url)
     .then((res) => {
