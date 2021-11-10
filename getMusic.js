@@ -33,7 +33,7 @@ delEv = (num, id) => {
 // launches separate events for the room
 getStart = (num, id) => {
   if (!drrr[num]) then {
-    drrr[num] = new Bot("MusicBot", "gg");
+    drrr[num] = new Bot("MusicBot", "setton");
     drrr[num].login(() => {
       console.log("MusicBot " + num + " login ok.");
 
