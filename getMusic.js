@@ -2,6 +2,7 @@ rooms = [];
 drrr = {};
 finder = {};
 times = {};
+leaveCheck = {};
 
 ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
 // get music
@@ -20,26 +21,32 @@ yt = (req, num, call) => {
 }
 // deleting events and profile after exiting
 delEv = (num, id) => {
-  drrr[num].leave(() => {
-    rooms.find((item, ind) => {
-      if (item === id) then {
-        rooms.splice(ind, 1);
-      }
-    });
-    clearInterval(times[id]);
-    delete times[id];
-    delete drrr[num];
-    console.log("MusicBot " + num + " exit ok.");
-  })
+  if (leaveCheck[id] === true) then {
+    drrr[num].leave(() => {
+      rooms.find((item, ind) => {
+        if (item === id) then {
+          rooms.splice(ind, 1);
+        }
+      });
+      clearInterval(times[id]);
+      delete times[id];
+      delete drrr[num];
+      console.log("MusicBot " + num + " exit ok.");
+    })
+  }
+  else later 1000 delEv(num, id);
 }
 // launches separate events for the room
 getStart = (num, id) => {
+  leaveCheck[id] = false;
+
   if (!drrr[num]) then {
     drrr[num] = new Bot("MusicBot", "setton");
     drrr[num].login(() => {
       console.log("MusicBot " + num + " login ok.");
 
       drrr[num].join(id, () => {
+        later 8000 leaveCheck[id] = true;
         console.log("MusicBot " + num + " join ok.");
 
         times[id] = setInterval(() => {
@@ -47,7 +54,10 @@ getStart = (num, id) => {
             drrr[num].dm("MusicBot", "keep");
           }
           else {
-            delEv(num, id);
+            clearInterval(times[id]);
+            delete times[id];
+            delete drrr[num];
+            console.log("MusicBot " + num + " exit ok.");
           }
         }, 60000*10);
 
@@ -104,12 +114,14 @@ state Start {
     finder.getLounge(() => {
       finder.rooms.forEach((room) => {
         if (room.language === "ru-RU") then {
-          if (room.description.match("/getmusic")) then {
-            if (room.users.length !== room.users.limit) then {
-              if (!rooms.includes(room.roomId)) then {
-                if (rooms.length !== 5) then {
-                  rooms.push(room.roomId);
-                  getStart(1, room.roomId);
+          if (room.music === true) then {
+            if (room.description.match("/getmusic")) then {
+              if (room.users.length !== room.users.limit) then {
+                if (!rooms.includes(room.roomId)) then {
+                  if (rooms.length !== 5) then {
+                    rooms.push(room.roomId);
+                    getStart(1, room.roomId);
+                  }
                 }
               }
             }
