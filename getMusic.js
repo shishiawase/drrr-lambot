@@ -1,4 +1,5 @@
 rooms = [];
+blacklist = [];
 drrr = {};
 finder = {};
 times = {};
@@ -46,20 +47,11 @@ getStart = (num, id) => {
       console.log("MusicBot " + num + " login ok.");
 
       drrr[num].join(id, () => {
+        drrr[num].specId = id;
         later 8000 leaveCheck[id] = true;
         console.log("MusicBot " + num + " join ok.");
 
-        times[id] = setInterval(() => {
-          if (drrr[num].room.roomId) then {
-            drrr[num].dm("MusicBot", "keep");
-          }
-          else {
-            clearInterval(times[id]);
-            delete times[id];
-            delete drrr[num];
-            console.log("MusicBot " + num + " exit ok.");
-          }
-        }, 60000*10);
+        times[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
 
         drrr[num].event(["msg", "dm"], (u, m) => {
           if (m.match("/m")) then {
@@ -92,7 +84,7 @@ getStart = (num, id) => {
           })
         });
 
-        drrr[num].print("/m [название или ссылка с YouTube].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
+        drrr[num].print("Командa:\n/m [название или ссылка с YouTube].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
       })
     })
   }
@@ -111,16 +103,29 @@ state Start {
   }
 
   timer 5000 {
+    if (Object.keys(drrr).length > 0) then {
+      Object.keys(drrr).forEach((num) => {
+        drrr[num].getLoc(() => {
+          if (!drrr[num].room.roomId) then {
+            blacklist.push(drrr[num].specId);
+            delEv(num, drrr[num].specId);
+          }
+        })
+      });
+    }
+
     finder.getLounge(() => {
       finder.rooms.forEach((room) => {
         if (room.language === "ru-RU") then {
           if (room.music === true) then {
             if (room.description.match("/getmusic")) then {
-              if (room.users.length !== room.users.limit) then {
-                if (!rooms.includes(room.roomId)) then {
-                  if (rooms.length !== 5) then {
-                    rooms.push(room.roomId);
-                    getStart(1, room.roomId);
+              if (!blacklist.includes(room.roomId)) then {
+                if (room.users.length !== room.users.limit) then {
+                  if (!rooms.includes(room.roomId)) then {
+                    if (rooms.length !== 5) then {
+                      rooms.push(room.roomId);
+                      getStart(1, room.roomId);
+                    }
                   }
                 }
               }
