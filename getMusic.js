@@ -6,6 +6,10 @@ times = {};
 leaveCheck = {};
 
 ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
+// rand
+rand = (min, max) => {
+  Math.floor(Math.random() * (max - min + 1)) + min
+}
 // get music
 yt = (req, num, call) => {
   url = encodeURIComponent(req);
@@ -72,10 +76,10 @@ getStart = (num, id) => {
         });
 
         drrr[num].event(["new-host"], (u, m, url, trip, e) => {
-          later 2000 drrr[num].getLoc(() => {
+          drrr[num].getLoc(() => {
             if (e.user === drrr[num].profile.name) then {
               if (drrr[num].users.length > 1) then {
-                drrr[num].handOver(drrr[num].users[Math.floor(Math.random() * drrr[num].users.length)].name);
+                drrr[num].handOver(drrr[num].users[rand(1, Math.floor(Math.random() * drrr[num].users.length)].name + 2);
               }
               else {
                 delEv(num, id);
