@@ -72,7 +72,7 @@ getStart = (num, id) => {
         });
 
         drrr[num].event(["new-host"], (u, m, url, trip, e) => {
-          drrr[num].getLoc(() => {
+          later 2000 drrr[num].getLoc(() => {
             if (e.user === drrr[num].profile.name) then {
               if (drrr[num].users.length > 1) then {
                 drrr[num].handOver(drrr[num].users[Math.floor(Math.random() * drrr[num].users.length)].name);
