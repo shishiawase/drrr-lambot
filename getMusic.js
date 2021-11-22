@@ -79,7 +79,7 @@ getStart = (num, id) => {
           drrr[num].getLoc(() => {
             if (e.user === drrr[num].profile.name) then {
               if (drrr[num].users.length > 1) then {
-                drrr[num].handOver(drrr[num].users[rand(1, Math.floor(Math.random() * drrr[num].users.length)].name + 2);
+                drrr[num].handOver(drrr[num].users[rand(1, Math.floor(Math.random() * drrr[num].users.length) + 2)].name);
               }
               else {
                 delEv(num, id);
