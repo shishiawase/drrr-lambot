@@ -102,6 +102,7 @@ state Start {
 
   timer 60000*15 {
     if (!finder.profile) then {
+      console.log("Profile undefined, try login...");
       going Reload;
     }
   }
@@ -152,7 +153,7 @@ tryLog = () => {
     console.log("Finder started.");
 
     if (!finder.profile) then {
-      console.log("Profile undefined.")
+      console.log("Login error.");
       later 5000 tryLog();
     }
     else {
