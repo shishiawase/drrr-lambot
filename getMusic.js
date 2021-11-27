@@ -88,6 +88,14 @@ getStart = (num, id) => {
           })
         });
 
+        drrr[num].event(["kick", "ban"], (u, m, url, trip, e) => {
+          if (drrr[num].lastTalk.message.match("kicked$|banned$")) then {
+            console.log(num + " you get a " + e.type)
+            blacklist.push(drrr[num].specId);
+            delEv(num, id);
+          }
+        });
+
         drrr[num].print("Командa:\n/m [название или ссылка с YouTube].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
       })
     })
@@ -112,7 +120,6 @@ state Start {
       Object.keys(drrr).forEach((num) => {
         drrr[num].getLoc(() => {
           if (!drrr[num].room.roomId) then {
-            blacklist.push(drrr[num].specId);
             delEv(num, drrr[num].specId);
           }
         })
