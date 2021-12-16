@@ -1,3 +1,5 @@
+const { Bot, listen } = require('./bot');
+
 rooms = [];
 blacklist = [];
 drrr = {};
@@ -122,6 +124,7 @@ state Start {
       Object.keys(drrr).forEach((num) => {
         drrr[num].getLoc(() => {
           if (!drrr[num].room.roomId) then {
+            console.log(num + " room ID undefined");
             delEv(num, drrr[num].specId);
           }
         })
