@@ -1,13 +1,16 @@
 const { Bot, listen } = require('./bot');
+const axios = require('axios');
+var finder = new Bot("finder", "gg");
 
-rooms = [];
-blacklist = [];
-drrr = {};
-finder = {};
-times = {};
-leaveCheck = {};
+let drrr = {};
+let rooms = [];
+let blacklist = [];
+let times = {};
+let leaveCheck = {};
 
-ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
+const ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
+
+finder.timers = {};
 // rand
 rand = (min, max) => {
   Math.floor(Math.random() * (max - min + 1)) + min
@@ -16,7 +19,12 @@ rand = (min, max) => {
 yt = (req, num, call) => {
   url = encodeURIComponent(req);
 
-  axios("http://astro-tyan.ejemplo.me/ytsearch?title=" + url)
+  axios("https://astro-tyan.loca.lt/ytsearch?title=" + url, {
+      'method': 'GET',
+      'headers': {
+          'Bypass-Tunnel-Reminder': '*'
+      }
+  })
     .then((res) => {
 
       call(res.data);
@@ -28,10 +36,10 @@ yt = (req, num, call) => {
 }
 // deleting events and profile after exiting
 delEv = (num, id) => {
-  if (leaveCheck[id] === true) then {
+  if (leaveCheck[id] === true) {
     drrr[num].leave(() => {
       rooms.find((item, ind) => {
-        if (item === id) then {
+        if (item === id) {
           rooms.splice(ind, 1);
         }
       });
@@ -41,27 +49,27 @@ delEv = (num, id) => {
       console.log("MusicBot " + num + " exit ok.");
     })
   }
-  else later 1000 delEv(num, id);
+  else setTimeout(() => delEv(num, id), 1000);
 }
 // launches separate events for the room
 getStart = (num, id) => {
   leaveCheck[id] = false;
 
-  if (!drrr[num]) then {
+  if (!drrr[num]) {
     drrr[num] = new Bot("MusicBot", "setton");
     drrr[num].login(() => {
       console.log("MusicBot " + num + " login ok.");
 
       drrr[num].join(id, () => {
         drrr[num].specId = id;
-        later 8000 leaveCheck[id] = true;
+        setTimeout(() => leaveCheck[id] = true, 8000);
         console.log("MusicBot " + num + " join ok.");
 
         times[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
 
         drrr[num].event(["msg", "dm"], (u, m) => {
-          if (m.match("/m")) then {
-            if (m.match(ytReg)) then {
+          if (m.match("/m")) {
+            if (m.match(ytReg)) {
               yt(m.replace(ytReg, ""), num, (y) => {
                 drrr[num].music(y.title, y.link);
               });
@@ -71,7 +79,7 @@ getStart = (num, id) => {
 
         drrr[num].event(["new-description"], (u) => {
           drrr[num].getLoc(() => {
-            if (!drrr[num].room.description.match("/getmusic")) then {
+            if (!drrr[num].room.description.match("/getmusic")) {
               delEv(num, id);
             }
           })
@@ -79,8 +87,8 @@ getStart = (num, id) => {
 
         drrr[num].event(["new-host"], (u, m, url, trip, e) => {
           drrr[num].getLoc(() => {
-            if (e.user === drrr[num].profile.name) then {
-              if (drrr[num].users.length > 1) then {
+            if (e.user === drrr[num].profile.name) {
+              if (drrr[num].users.length > 1) {
                 drrr[num].handOver(drrr[num].users[rand(1, Math.floor(Math.random() * drrr[num].users.length) + 2)].name);
               }
               else {
@@ -92,7 +100,7 @@ getStart = (num, id) => {
 
         drrr[num].event(["kick", "ban"], (u, m, url, trip, e) => {
           drrr[num].getLoc(() => {
-            if (drrr[num].lastTalk.message.match("kicked|banned")) then {
+            if (drrr[num].lastTalk.message.match("kicked|banned")) {
               console.log(num + " you get a " + e.type)
               blacklist.push(drrr[num].specId);
               delEv(num, id);
@@ -110,39 +118,39 @@ getStart = (num, id) => {
   }
 }
 // looking for a room that needs music
-state Start {
+finder.state("Start", () => {
 
-  timer 60000*15 {
-    if (!finder.profile) then {
+  finder.timers.head = setInterval(() => {
+    if (!finder.profile) {
       console.log("Profile undefined, try login...");
-      going Reload;
+      finder.going("Reload");
     }
-  }
+  }, 60000*15);
 
-  timer 60000 {
-    if (Object.keys(drrr).length > 0) then {
+  finder.timers.undefined = setInterval(() => {
+    if (Object.keys(drrr).length > 0) {
       Object.keys(drrr).forEach((num) => {
         drrr[num].getLoc(() => {
-          if (!drrr[num].room.roomId) then {
+          if (!drrr[num].room.roomId) {
             console.log(num + " room ID undefined");
             delEv(num, drrr[num].specId);
           }
         })
       });
     }
-  }
+  }, 60000);
 
-  timer 5000 {
+  finder.timers.lounge = setInterval(() => {
 
     finder.getLounge(() => {
       finder.rooms.forEach((room) => {
-        if (room.language === "ru-RU") then {
-          if (room.music === true) then {
-            if (room.description.match("/getmusic")) then {
-              if (!blacklist.includes(room.roomId)) then {
-                if (room.users.length !== room.users.limit) then {
-                  if (!rooms.includes(room.roomId)) then {
-                    if (rooms.length !== 5) then {
+        if (room.language === "ru-RU") {
+          if (room.music === true) {
+            if (room.description.match("/getmusic")) {
+              if (!blacklist.includes(room.roomId)) {
+                if (room.users.length !== room.users.limit) {
+                  if (!rooms.includes(room.roomId)) {
+                    if (rooms.length !== 5) {
                       rooms.push(room.roomId);
                       getStart(1, room.roomId);
                     }
@@ -154,27 +162,34 @@ state Start {
         }
       })
     })
-  }
-}
+  }, 5000);
+});
 
-state Reload {
+finder.state("Reload", () => {
+  clearInterval(finder.timers.head);
+  clearInterval(finder.timers.undefined);
+  clearInterval(finder.timers.lounge);
   tryLog();
-}
+});
 
 tryLog = () => {
-  finder = new Bot(__this__, "gg", "gg");
+  if (finder.load()) {
+    console.log("Finder reloaded");
+    finder.going("Start");
+  } else {
+    finder.login(() => {
+      finder.save();
+      console.log("Finder started.");
 
-  finder.login(() => {
-    console.log("Finder started.");
-
-    if (!finder.profile) then {
-      console.log("Login error.");
-      later 5000 tryLog();
-    }
-    else {
-      going Start;
-    }
-  })
+      if (!finder.profile) {
+        console.log("Login error.");
+        setTimeout(() => tryLog(), 5000);
+      }
+      else {
+        finder.going("Start");
+      }
+    })
+  }
 }
 
 tryLog();
