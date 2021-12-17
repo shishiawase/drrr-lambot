@@ -11,9 +11,19 @@ let leaveCheck = {};
 const ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
 
 finder.timers = {};
-// rand
-rand = (min, max) => {
-  Math.floor(Math.random() * (max - min + 1)) + min
+// transfer host to random user
+randHost = (num, min, max) => {
+  drrr[num].getLoc(() => {
+    let uL = drrr[num].users.length;
+    let arg = Math.floor(Math.random() * (max - min + 1)) + min;
+    let uN = drrr[num].users[arg].name;
+
+    if (uN !== "MusicBot") {
+      drrr[num].handOver(uN);
+      console.log("Transfer host to - ", uN);
+    } else rand(num, min, uL - 1);
+  })
+
 }
 // get music
 yt = (req, num, call) => {
@@ -107,7 +117,7 @@ getStart = (num, id) => {
           drrr[num].getLoc(() => {
             if (e.user === drrr[num].profile.name) {
               if (drrr[num].users.length > 1) {
-                drrr[num].handOver(drrr[num].users[rand(1, Math.floor(Math.random() * drrr[num].users.length) + 2)].name);
+                randHost(num, 0, drrr[num].users.length - 1);
               }
               else {
                 delEv(num, id);
@@ -166,7 +176,7 @@ finder.state("Start", () => {
           if (room.music === true) {
             if (room.description.match("/getmusic")) {
               if (!blacklist.includes(room.roomId)) {
-                if (room.users.length !== room.users.limit) {
+                if (room.total !== room.limit) {
                   if (!rooms.includes(room.roomId)) {
                     if (rooms.length !== 5) {
                       rooms.push(room.roomId);
