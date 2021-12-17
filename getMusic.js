@@ -20,10 +20,10 @@ yt = (req, num, call) => {
   url = encodeURIComponent(req);
 
   axios("https://astro-tyan.loca.lt/ytsearch?title=" + url, {
-      'method': 'GET',
-      'headers': {
-          'Bypass-Tunnel-Reminder': '*'
-      }
+    'method': 'GET',
+    'headers': {
+      'Bypass-Tunnel-Reminder': '*'
+    }
   })
     .then((res) => {
 
@@ -31,6 +31,19 @@ yt = (req, num, call) => {
 
     }).catch((err) => {
       console.log("MUSIC REQUEST ERROR: ", err);
+      drrr[num].print("Произошла ошибка.");
+    })
+}
+// rand songs
+ytRand = (num, call) => {
+  axios("https://astro-tyan.loca.lt/rand", {
+    'method': 'GET',
+    'headers': {
+      'Bypass-Tunnel-Reminder': '*'
+    }
+  })
+    .then((res) => call(res.data)).catch((err) => {
+      console.log("MUSIC RAND REQUEST ERROR: ", err);
       drrr[num].print("Произошла ошибка.");
     })
 }
@@ -75,6 +88,11 @@ getStart = (num, id) => {
               });
             }
           }
+          else if (m.match("/rand")) {
+            ytRand(num, (y) => {
+              drrr[num].music(y.title, y.link);
+            });
+          }
         });
 
         drrr[num].event(["new-description"], (u) => {
@@ -108,7 +126,7 @@ getStart = (num, id) => {
           })
         });
 
-        drrr[num].print("Командa:\n/m [название или ссылка с YouTube].\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
+        drrr[num].print("Командa:\n/m [название или ссылка с YouTube].\n/rand - рандомная песня.\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
       })
     })
   }
