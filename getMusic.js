@@ -1,7 +1,7 @@
 const { Bot, listen } = require('./bot');
 const axios = require('axios');
 var finder = new Bot("finder", "gg");
-
+// sp
 let drrr = {};
 let rooms = [];
 let blacklist = [];
