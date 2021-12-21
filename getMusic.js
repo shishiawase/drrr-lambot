@@ -48,7 +48,7 @@ randHost = (num, min, max) => {
 yt = (req, num, call) => {
   url = encodeURIComponent(req);
 
-  axios("https://150.230.148.56/ytsearch?title=" + url)
+  axios("https://30a6-150-230-148-56.ngrok.io/ytsearch?title=" + url)
     .then((res) => {
 
       call(res.data);
@@ -60,7 +60,7 @@ yt = (req, num, call) => {
 }
 // rand songs
 ytRand = (num, call) => {
-  axios("https://150.230.148.56/rand")
+  axios("https://30a6-150-230-148-56.ngrok.io/rand")
     .then((res) => call(res.data)).catch((err) => {
       console.log("MUSIC RAND REQUEST ERROR: ", err);
       drrr[num].print("Произошла ошибка.");
