@@ -20,7 +20,7 @@ const { Bot, listen } = require('./bot');
 const axios = require('axios');
 var visit = new Visit();
 // sp
-let finder = {};
+let finder = new Bot("finder", "gg");
 let drrr = {};
 let rooms = [];
 let blacklist = [];
@@ -240,8 +240,6 @@ tryLog = () => {
       console.log("Finder reloaded");
       visit.going("Start");
     } else {
-      finder = new Bot("finder", "gg");
-
       finder.login(() => {
         finder.save();
         console.log("Finder started.");
