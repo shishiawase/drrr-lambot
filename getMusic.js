@@ -80,13 +80,16 @@ getStart = (num, id) => {
 
   if (!drrr[num]) {
     drrr[num] = new Bot("MusicBot", "setton");
+    drrr[num].uss = [];
     drrr[num].login(() => {
       console.log("MusicBot " + num + " login ok.");
 
       drrr[num].join(id, () => {
         drrr[num].specId = id;
         setTimeout(() => leaveCheck[id] = true, 8000);
-        console.log("MusicBot " + num + " join ok.");
+        drrr[num].users.forEach((x) => drrr[num].uss.push(x.name));
+        console.log("MusicBot " + num + " join room - " + drrr[num].profile.loc)
+        console.log("Users: " + drrr[num].uss.join(", "));
 
         times[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
 
@@ -98,7 +101,7 @@ getStart = (num, id) => {
               });
             }
           }
-          else if (m.match("/rand")) {
+          else if (m.match("/r")) {
             ytRand(num, (y) => {
               drrr[num].music(y.title, y.link);
             });
@@ -136,7 +139,7 @@ getStart = (num, id) => {
           })
         });
 
-        drrr[num].print("Командa:\n/m [название или ссылка с YouTube].\n/rand - рандомная песня.\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
+        drrr[num].print("Командa:\n/m [название или ссылка с YouTube].\n/r - рандомная песня.\nЧтобы бот вышел из комнаты, просто сотрите из описания /getmusic."); // description of functions at the entrance to the room
       })
     })
   }
