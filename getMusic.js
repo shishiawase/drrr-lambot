@@ -88,7 +88,7 @@ getStart = (num, id) => {
         drrr[num].specId = id;
         setTimeout(() => leaveCheck[id] = true, 8000);
         drrr[num].users.forEach((x) => drrr[num].uss.push(x.name));
-        drrr[num].getLoc(() => console.log("MusicBot " + num + " join room - " + drrr[num].profile.loc));
+        console.log("MusicBot " + num + " join room - " + drrr[num].room.name);
         console.log("Users: " + drrr[num].uss.join(", "));
 
         times[id] = setInterval(() => drrr[num].dm("MusicBot", "keep"), 60000*10);
