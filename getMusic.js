@@ -48,7 +48,7 @@ randHost = (num, min, max) => {
 yt = (req, num, call) => {
   url = encodeURIComponent(req);
 
-  axios("https://astro-tyan.loca.lt/ytsearch?title=" + url, {
+  axios("https://150.230.148.56/ytsearch?title=" + url, {
     'method': 'GET',
     'headers': {
       'Bypass-Tunnel-Reminder': '*'
@@ -65,7 +65,7 @@ yt = (req, num, call) => {
 }
 // rand songs
 ytRand = (num, call) => {
-  axios("https://astro-tyan.loca.lt/rand", {
+  axios("https://150.230.148.56/rand", {
     'method': 'GET',
     'headers': {
       'Bypass-Tunnel-Reminder': '*'
