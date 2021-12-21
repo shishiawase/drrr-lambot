@@ -29,7 +29,6 @@ let leaveCheck = {};
 
 const ytReg = new RegExp("^/m\\s|\\s/m$", "gi");
 
-finder.timers = {};
 // transfer host to random user
 randHost = (num, min, max) => {
   drrr[num].getLoc(() => {
@@ -160,7 +159,7 @@ getStart = (num, id) => {
 // looking for a room that needs music
 visit.state("Start", () => {
 
-  finder.timers.head = setInterval(() => {
+  times.head = setInterval(() => {
     if (!finder.profile) {
       finderErr = true;
       console.log("Profile undefined, try login...");
@@ -168,7 +167,7 @@ visit.state("Start", () => {
     }
   }, 60000*15);
 
-  finder.timers.undefined = setInterval(() => {
+  times.undefined = setInterval(() => {
     if (Object.keys(drrr).length > 0) {
       Object.keys(drrr).forEach((num) => {
         drrr[num].getLoc(() => {
@@ -181,7 +180,7 @@ visit.state("Start", () => {
     }
   }, 60000);
 
-  finder.timers.lounge = setInterval(() => {
+  times.lounge = setInterval(() => {
 
     finder.getLounge(() => {
       finder.rooms.forEach((room) => {
@@ -207,9 +206,9 @@ visit.state("Start", () => {
 });
 
 visit.state("Reload", () => {
-  clearInterval(finder.timers.head);
-  clearInterval(finder.timers.undefined);
-  clearInterval(finder.timers.lounge);
+  clearInterval(times.head);
+  clearInterval(times.undefined);
+  clearInterval(times.lounge);
   tryLog();
 });
 
