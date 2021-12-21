@@ -1,7 +1,26 @@
+class Visit {
+
+  states = {};
+  cur_st = "";
+
+  state(name, call){
+    this.states[name] = call;
+  }
+
+  going(name){
+    let dest = this.states[name];
+    if(!dest) return console.log("no such state");
+    this.cur_st = name;
+    dest();
+  }
+
+}
+
 const { Bot, listen } = require('./bot');
 const axios = require('axios');
-var finder = new Bot("finder", "gg");
+var visit = new Visit();
 // sp
+let finder = {};
 let drrr = {};
 let rooms = [];
 let blacklist = [];
@@ -149,13 +168,13 @@ getStart = (num, id) => {
   }
 }
 // looking for a room that needs music
-finder.state("Start", () => {
+visit.state("Start", () => {
 
   finder.timers.head = setInterval(() => {
     if (!finder.profile) {
       finderErr = true;
       console.log("Profile undefined, try login...");
-      finder.going("Reload");
+      visit.going("Reload");
     }
   }, 60000*15);
 
@@ -197,7 +216,7 @@ finder.state("Start", () => {
   }, 5000);
 });
 
-finder.state("Reload", () => {
+visit.state("Reload", () => {
   clearInterval(finder.timers.head);
   clearInterval(finder.timers.undefined);
   clearInterval(finder.timers.lounge);
@@ -214,13 +233,15 @@ tryLog = () => {
       finder.save();
       console.log("New finder saved.");
       finderErr = false;
-      finder.going("Start");
+      visit.going("Start");
     })
   } else {
     if (finder.load()) {
       console.log("Finder reloaded");
-      finder.going("Start");
+      visit.going("Start");
     } else {
+      finder = new Bot("finder", "gg");
+
       finder.login(() => {
         finder.save();
         console.log("Finder started.");
@@ -230,7 +251,7 @@ tryLog = () => {
           setTimeout(() => tryLog(), 5000);
         }
         else {
-          finder.going("Start");
+          visit.going("Start");
         }
       })
     }
