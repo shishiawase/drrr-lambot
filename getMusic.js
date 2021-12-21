@@ -153,6 +153,7 @@ finder.state("Start", () => {
 
   finder.timers.head = setInterval(() => {
     if (!finder.profile) {
+      finderErr = true;
       console.log("Profile undefined, try login...");
       finder.going("Reload");
     }
@@ -203,23 +204,36 @@ finder.state("Reload", () => {
   tryLog();
 });
 
+var finderErr = false;
+
 tryLog = () => {
-  if (finder.load()) {
-    console.log("Finder reloaded");
-    finder.going("Start");
-  } else {
+  if (finderErr === true) {
+    finder = new Bot("finder", "gg");
+
     finder.login(() => {
       finder.save();
-      console.log("Finder started.");
-
-      if (!finder.profile) {
-        console.log("Login error.");
-        setTimeout(() => tryLog(), 5000);
-      }
-      else {
-        finder.going("Start");
-      }
+      console.log("New finder saved.");
+      finderErr = false;
+      finder.going("Start");
     })
+  } else {
+    if (finder.load()) {
+      console.log("Finder reloaded");
+      finder.going("Start");
+    } else {
+      finder.login(() => {
+        finder.save();
+        console.log("Finder started.");
+
+        if (!finder.profile) {
+          console.log("Login error.");
+          setTimeout(() => tryLog(), 5000);
+        }
+        else {
+          finder.going("Start");
+        }
+      })
+    }
   }
 }
 
